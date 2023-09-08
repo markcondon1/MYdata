@@ -1,12 +1,13 @@
 import React from 'react'
 import { View, Text, Dimensions } from 'react-native';
-import { Svg, Rect } from 'react-native-svg';
+import { Svg, Circle } from 'react-native-svg';
 import AwesomeAlert from 'react-native-awesome-alerts';
 
 let backgroundColor="#faf5ef";
-let highlight="#97deb1";
-let midtone = "#489c66";
+let highlight="#63ba83";
+let midtone = "#4ea66d";
 let dark="#343434";
+let warning = "#E07A5F";
 let pink="#c740d6";
 let red="#d64040";
 let yellow="#d6b640";
@@ -15,9 +16,9 @@ let blue="#438ab0";
 let teal="#43b0a9";
 let indigo="#6243b0";
 
-let colorArray = [red,yellow,blue];
+let colorArray=[red,yellow,blue];
 
-export default class ChessClock extends React.Component {
+export default class ButtonOrder extends React.Component {
   //State of the class, data stored in here
   constructor(props) {
     super(props);
@@ -27,7 +28,6 @@ export default class ChessClock extends React.Component {
       alertTitle: "",
       alertMessage: "",
       graphData: [],
-      maxLength: 0,
     }
   }
 
@@ -48,42 +48,12 @@ export default class ChessClock extends React.Component {
     let dataArray = graph.Data;
     this.quickSort(dataArray, 0, (dataArray.length - 1));
 
-    let buttons = graph.Buttons;
-    let finalArray = [];
-    let maxLength = 0;
-    let checked = [];
-
-    //For each entry, checks the susequent entries for the next entry from the same button
-    //Skips over buttons that have already been checked in this way
-    for (let i = 0; i < dataArray.length; i++) {
-      if (!checked.includes(i)) {
-        for (let j = i + 1; j < dataArray.length; j++) {
-          let start = dataArray[i];
-          let end = dataArray[j];
-
-          if (start.ButtonID == end.ButtonID) {
-            let duration = end.Date.getTime() - start.Date.getTime();
-            maxLength = Math.max(maxLength, duration);
-            finalArray.push({
-              ButtonID: start.ButtonID,
-              ButtonName: buttons[start.ButtonID].ButtonName,
-              Duration: duration
-            });
-
-            checked.push(j);
-            break;
-          }
-        }
-      }
-    }
-
     this.setState({
       isLoading: false,
-      graphData: finalArray,
-      maxLength: maxLength,
+      graphData: dataArray,
     });
-  }
-
+  } 
+ 
   // Algorithim Implementation modified from : https://www.geeksforgeeks.org/quick-sort/ 
   quickSort = (arr, low, high) => {
     if (low < high) {
@@ -115,26 +85,27 @@ export default class ChessClock extends React.Component {
 
   //Displays additional info when user interacts with graph
   pressHandler = (item) => {
-    let message = `Button: ${item.ButtonName}\nDuration: ${(item.Duration / 1000).toFixed(3)} seconds`;
+    let description = "Date: " + item.Date.toDateString() + "\nTime: " + item.Date.toLocaleTimeString();
+    let button = this.props.rawData.Buttons[item.ButtonID].ButtonName;
     
     this.setState({
       showAlert: true,
-      alertMessage: message});
+      alertTitle: button,
+      alertMessage: description,
+    });
   }
 
   render() {
     return (
-      <View>
-        <View style={this.props.styles.container}>
-          <View style={this.props.styles.border}>
-            <Lines data={this.state.graphData} maxLength={this.state.maxLength} pressHandler={this.pressHandler}></Lines>
-          </View>
-          <Text style={this.props.styles.regularText}> Tap the lines to see more information </Text>
+      <View style={this.props.styles.container}>
+        <View style={this.props.styles.border}>
+          <GetDots data={this.state.graphData} pressHandler={this.pressHandler}/>
         </View>
-
+        <Text style={this.props.styles.regularText}> Tap the entries to see more information </Text>
+        
         <AwesomeAlert
           show={this.state.showAlert}
-          title={"Data"}
+          title={this.state.alertTitle}
           message= {this.state.alertMessage}
           titleStyle={this.props.styles.alertText}
           messageStyle={this.props.styles.alertBody}
@@ -146,24 +117,27 @@ export default class ChessClock extends React.Component {
   }
 }
 
-function Lines({data, maxLength, pressHandler}) {
-  let toReturn = [];
+function GetDots ({data, pressHandler}) {
+  let dots = [];
   let width = Dimensions.get("window").width * .75;
-  let height = ((width * .1) * (data.length + 1)) + (data.length * .075);
-  let scale = (width * .9) / maxLength;
-  let curHeight = width * .1;
+  let height = Math.ceil(data.length / 5)*(width / 5);
+  
+  let radius = width/10;
+  let currentX = radius;
+  let currentY = radius;
 
-  for(let i = 0; i < data.length; i++) {
-    let temp = (data[i].Duration * scale) / 2;
-    temp = Math.max(temp, 5);
-    
-    toReturn.push(<Rect key={i} x={width / 2 - temp} y={curHeight - (width * .075)} width={temp * 2} height={width * .075} fill={colorArray[data[i].ButtonID]} onPress={() => pressHandler(data[i])}></Rect>)
-    curHeight += width * .1;
+  //For each entry, creates a circle object and gradually fills the screen from left to right, top to bottom
+  for(let i = 0; i < data.length; i++){
+    dots.push(<Circle key={i} cx={currentX} cy={currentY} r={radius} onPress={() => pressHandler(data[i])} fill={colorArray[data[i].ButtonID]}/>);
+    currentX += radius * 2;
+    if(currentX > width){
+      currentX = radius;
+      currentY += radius*2;
+    }
   }
-
-  return (
+  return(
     <Svg width={width} height={height}>
-      {toReturn}
+      {dots}
     </Svg>
   )
-}
+} 

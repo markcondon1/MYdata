@@ -1,259 +1,122 @@
-// default imports
-import React, {useEffect, useState, Suspense } from 'react'
-import {View,Text, Dimensions,TouchableWithoutFeedback} from 'react-native';
-// standard graph stuff
-import {LineChart,BarChart,PieChart,ProgressChart,ContributionGraph,StackedBarChart,} from "react-native-chart-kit";
-// custom shape stuff
-import Svg, {Circle,Ellipse,G,TSpan,TextPath,Path,Polygon,Polyline,Line,Rect,Use,Image,Symbol,Defs,LinearGradient,RadialGradient,Stop,ClipPath,Pattern,Mask,} from 'react-native-svg';
-// Table stuff
-import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
-// Global Variables
-import GLOBAL from "../global.js";
+import React from 'react'
+import { View, Text, Dimensions } from 'react-native';
+import { Svg, Circle, Line } from 'react-native-svg';
 import AwesomeAlert from 'react-native-awesome-alerts';
 
-
 export default class Triskelion extends React.Component {
-
-    // State of the class, data stored in here
-    // @param: props, the props passed in from the the parent class
-    constructor(props) {
-        super(props);
-        this.state = {
-            isLoading: true,
-            numberOfDays:0,
-            endDate:new Date("2017-04-01"),
-            title:"Whatever you want",
-            graphData: [
-            ],
-            showAlert:false,
-            alertText:"",
-            tableHead: [' Column 1', ' Column 2',],
-            tableData: [
-            ['row 1', 'row 1',],
-            ['row 2', 'row 2',],
-            ],
-        }
+  //State of the class, data stored in here
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoading: true,
+      showAlert:false,
+      alertTitle:"",
+      alertMessage:"",
+      graphData: [],
+      buttonNames: [],
     }
-
-    previousProps;
-    // when passed in json changes, this is called
-    // updates the state for the graph
-    componentDidUpdate(prevProps, prevState) {
-      if (prevProps !== this.props || this.state.isLoading) {
-        let tempGraphData=this.DataProcessing(this.props.rawData);
-        let newTableData=this.ChangeTableData(tempGraphData);
-        this.setState({
-          isLoading:false,
-          graphData:tempGraphData,
-          tableData:newTableData,
-          title:this.props.rawData.Title,
-        });
-        this.previousProps=this.props;
-      }
-    }
-
-
-    // called on load
-    componentDidMount(){
-      let tempGraphData=this.DataProcessing(GLOBAL.ITEM);
-      let newTableData=this.ChangeTableData(tempGraphData);
-      this.setState({
-        isLoading:false,
-        graphData:tempGraphData,
-        tableData:newTableData,
-        title:GLOBAL.ITEM.Title,
-      });
-    }
-
-    // used to manually reload the state
-    updateData(){
-        this.setState({
-          isLoading:true,
-        });
-    }
-
-  //Changes TableData for BarGraph
-  ChangeTableData = (tempData) => {
-    let tableDataClone=[];
-    for (let i =0; i<this.descriptionList.length;i++){
-      let date= this.descriptionList[i].buttonName + "\n" +this.descriptionList[i].data.replace('T', '\n');
-      let temp= [date, this.descriptionList[i].Description];
-      tableDataClone.push(temp);
-    }
-    return tableDataClone;
-}
-
-descriptionList=[];
-
-  DataProcessing = (rawJson) =>{
-        let parsedJson=[];
-        let dataArray = rawJson.Data;
-        let singleArray=[];
-        this.descriptionList=[];
-        for(let i = 0 ; i < dataArray.length;i++){
-          for(let j=0; j<dataArray[i].data.length;j++){
-            singleArray.push(this.reformatToCorrect(dataArray[i],i,j));
-            if(dataArray[i].data[j].Description!=undefined){
-              let temp=(this.reformatToCorrect(dataArray[i],i,j));
-              temp.Description=dataArray[i].data[j].Description;
-              this.descriptionList.push(temp);
-            }
-          }
-        };
-
-        this.quickSort(singleArray,0,(singleArray.length-1));
-
-        let buttonFollowed=[[0,0,0],[0,0,0],[0,0,0]];
-        let buttonNames=[];
-        let lastButton=-1;
-        for(let i =0; i<singleArray.length;i++){
-          if(lastButton!=-1){
-            buttonFollowed[lastButton][singleArray[i].button]+=1
-          }
-          if(buttonNames[singleArray[i].button]==undefined){
-            buttonNames[singleArray[i].button]=singleArray[i].buttonName;
-          }
-          lastButton=singleArray[i].button;
-        }
-        return buttonFollowed;
   }
 
-  reformatToCorrect=(rawJson,i,j)=>{
-            let tempJson={};
-            tempJson.data=rawJson.data[j].Year+"-";
-            if(rawJson.data[j].Month<10){
-              tempJson.data+="0";
-            }
-              tempJson.data+=(rawJson.data[j].Month+1)+"-";
-
-            if(rawJson.data[j].Day<10){
-              tempJson.data+="0";
-            }
-            tempJson.data+=(rawJson.data[j].Day)+"T";
-
-            if(rawJson.data[j].Hour<10){
-              tempJson.data+="0";
-            }
-            tempJson.data+=(rawJson.data[j].Hour)+":";
-
-            if(rawJson.data[j].Minutes<10){
-              tempJson.data+="0";
-            }
-            tempJson.data+=(rawJson.data[j].Minutes)+":";
-
-            if(rawJson.data[j].Seconds<10){
-              tempJson.data+="0";
-            }
-            tempJson.data+=(rawJson.data[j].Seconds);
-
-            tempJson.button=i;
-            tempJson.buttonName=rawJson.ButtonName;
-            return tempJson;
+  //Called on load
+  componentDidMount(){
+    this.DataProcessing(this.props.rawData);
   }
+
+  //Called when the data changes and updates the state for the graph
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps !== this.props || this.state.isLoading) {
+      this.DataProcessing(this.props.rawData);
+    }
+  }
+
+  //Processes the incoming data as needed for the graph
+  DataProcessing = (graph) =>{
+    let dataArray = graph.Data;
+    this.quickSort(dataArray, 0, (dataArray.length - 1));
+
+    let buttonFollowed = [];
+    for (let i = 0; i < graph.Buttons.length; i++) {
+      buttonFollowed.push(new Array(graph.Buttons.length).fill(0));
+    }
+    //E.X. for 3 buttons, buttonFollowed = [[0,0,0], [0,0,0], [0,0,0]];
+    //Each nested array represents a separate button
     
-  swap=(arr,xp, yp)=>{
-    var temp = arr[xp];
-    arr[xp] = arr[yp];
-    arr[yp] = temp;
+    //For each button, checks which button follows it
+    for(let i = 1; i < dataArray.length; i++) {
+      buttonFollowed[dataArray[i - 1].ButtonID][dataArray[i].ButtonID] += 1;
+    }
+
+    this.setState({
+      isLoading: false,
+      graphData: buttonFollowed,
+      buttonNames: graph.Buttons,
+    });
   }
  
   // Algorithim Implementation modified from : https://www.geeksforgeeks.org/quick-sort/ 
-  swap=(arr,xp, yp)=>{
-    var temp = arr[xp];
-    arr[xp] = arr[yp];
-    arr[yp] = temp;
+  quickSort = (arr, low, high) => {
+    if (low < high) {
+      let pi = this.partition(arr, low, high);
+      this.quickSort(arr, low, pi - 1);
+      this.quickSort(arr, pi + 1, high);
+    }
   }
 
   partition = (arr, low, high) => {
-  
-    // pivot
     let pivot = arr[high];
-
-    // Index of smaller element and
-    // indicates the right position
-    // of pivot found so far
     let i = (low - 1);
 
     for (let j = low; j <= high - 1; j++) {
-        // If current element is smaller
-        // than the pivot
-        if (new Date(arr[j].data) < new Date(pivot.data)) {
-            // Increment index of
-            // smaller element
-            i++;
-            this.swap(arr, i, j);
-        }
+      if (arr[j].Date < pivot.Date) {
+        i++;
+        this.swap(arr, i, j);
+      }
     }
     this.swap(arr, i + 1, high);
     return (i + 1);
   }
-
-  quickSort = (arr, low, high) => {
-    if (low < high) {
-
-        // pi is partitioning index, arr[p]
-        // is now at right place
-        let pi = this.partition(arr, low, high);
-
-        // Separately sort elements before
-        // partition and after partition
-        this.quickSort(arr, low, pi - 1);
-        this.quickSort(arr, pi + 1, high);
-    }
+  
+  swap=(arr,xp, yp)=>{
+    var temp = arr[xp];
+    arr[xp] = arr[yp];
+    arr[yp] = temp;
   }
 
-  whenPressed = (data, buttonNumber) => {
-    console.log(data);
-    let tempString="";
-    for (let i =0; i<data.length;i++){
-      tempString+="Button " + buttonNumber + " then Button " + i;
-      tempString+=" : " + data[i] + "\n";
+  //Displays additional info when user interacts with graph
+  pressHandler = (data, buttons, number) => {
+    let message = "";
+    for (let i = 0; i < buttons.length; i++){
+      message += buttons[number].ButtonName + " then " + buttons[i].ButtonName + " : " + data[i] + "\n";
     }
-    console.log(tempString);
     this.setState({
-      showAlert:true,
-      alertText:tempString,
+      showAlert: true,
+      alertTitle: buttons[number].ButtonName,
+      alertMessage: message,
     })
   }
 
-    render() {
-      const state = this.state;
-        return (
-          <View style={this.props.styles.container}>
-              <View>
-              <View style={this.props.styles.border}>
-                    <Dot data={this.state.graphData} pressHandler={this.whenPressed}></Dot>
-                </View>
-                <Text style={this.props.styles.regularText}> Press on the dots to see more information </Text>
-              </View>
-              {this.descriptionList.length >0 ? (
-                <View style={this.props.styles.container}>
-                  <Table borderStyle={{borderWidth: 2, borderColor:{dark}}}>
-                      <Row data={this.state.tableHead} style={this.props.styles.tableHead} textStyle={this.props.styles.tableHead}/>
-                      <Rows data={this.state.tableData} textStyle={this.props.styles.tableText}/>
-                  </Table>
-                </View>
-              ): null}
-              <AwesomeAlert
-                show={this.state.showAlert}
-                showProgress={false}
-                title={"Point Data"}
-                message= {this.state.alertText}
-                closeOnTouchOutside={true}
-                closeOnHardwareBackPress={false}
-                showCancelButton={false}
-                showConfirmButton={true}
-                confirmText="Okay"
-                confirmButtonColor="#63ba83"
-                contentContainerStyle={this.props.styles.alert}
-                messageStyle={this.props.styles.alertBody}
-                titleStyle={this.props.styles.alertText}
-                onConfirmPressed={() => {
-                  this.setState({showAlert:false});
-              }}/>
+  render() {
+    return (
+      <View>
+        <View style={this.props.styles.container}>        
+          <View style={this.props.styles.border}>
+            <Dot data={this.state.graphData} buttons={this.state.buttonNames} pressHandler={this.pressHandler}></Dot>
           </View>
-        );
-    }
+          <Text style={this.props.styles.regularText}> Tap the dots to see more information </Text>
+        </View>
+
+        <AwesomeAlert
+          show={this.state.showAlert}
+          title={this.state.alertTitle}
+          message={this.state.alertMessage}
+          contentContainerStyle={this.props.styles.alert}
+          messageStyle={this.props.styles.alertBody}
+          titleStyle={this.props.styles.alertText}
+          onDismiss={() => { this.setState({showAlert:false}); }}
+        />
+      </View>
+    );
+  }
 }
 
 let backgroundColor="#faf5ef";
@@ -269,47 +132,58 @@ let teal="#43b0a9";
 let indigo="#6243b0";
 let colorArray=[red,yellow,blue];
 
-function Dot ({data, pressHandler}) {
-  let smallAngle=(2*Math.PI)/(data.length);
-  let width=Dimensions.get("window").width*.75;
-  let height=width;
-  let items=[]
-  let r = width/15;
-  let outerTriangle=[];
-  let innerTriangle=[];
-  let strokeWidth=2;
-  let alreadyAdded=[[0,0,0],[0,0,0],[0,0,0]];
-  let circles=[];
+function Dot ({data, buttons, pressHandler}) {
+  let width = Dimensions.get("window").width * .75;
+  let height = width;
+  let center = width/2;
 
-  for (let i =0; i<data.length; i++){
-    let diffX=Math.sin(smallAngle*i)*(width*(1/3));
-    let diffY=Math.cos(smallAngle*i)*(width*(1/3));
+  let radius = width / 3;
+  let r = width / 15;
+  let radiusOuter = radius + (r * .75);
+  let radiusInner = radius - (r * .75);
+  let links = [];
+  let selfLinks = [];
+  let outerTriangle = [];
+  let innerTriangle = [];
+  let strokeWidth = 2;
+  let alreadyAdded = [[0,0,0],[0,0,0],[0,0,0]];
+  let circles = [];
 
-    let diffXL=Math.sin(smallAngle*i)*(width*(14/36));
-    let diffYL=Math.cos(smallAngle*i)*(width*(14/36));
-    let diffXS=Math.sin(smallAngle*i)*(width*(11/36));
-    let diffYS=Math.cos(smallAngle*i)*(width*(11/36));
+  for (let i = 0; i < buttons.length; i++) {
+    let angle = i * ((2 * Math.PI) / buttons.length);
+    //Co-ordinates for the center of the graph
+    let diffX = center - (Math.sin(angle) * radius);
+    let diffY = center - (Math.cos(angle) * radius);
 
-    outerTriangle.push([width/2-diffXL,height/2-diffYL]);
-    innerTriangle.push([width/2-diffXS,height/2-diffYS]);
+    //Co-ordinates for the dots representing the buttons
+    let diffXL = center - (Math.sin(angle) * radiusOuter);
+    let diffYL = center - (Math.cos(angle) * radiusOuter);
+    let diffXS = center - (Math.sin(angle) * radiusInner);
+    let diffYS = center - (Math.cos(angle) * radiusInner);
 
-    circles.push(<Circle cx={width/2-diffX} cy={height/2-diffY} r={r} fill={colorArray[i]} onPress={()=>pressHandler(data[i],i)}/>)
+    outerTriangle.push([diffXL, diffYL]);
+    innerTriangle.push([diffXS, diffYS]);
+
+    circles.push(<Circle key={i} cx={diffX} cy={diffY} r={r} fill={colorArray[i]} onPress={() => pressHandler(data[i], buttons, i)}/>)
   }
 
-  for(let i =0; i<data.length;i++){
-    for(let j = 0; j<data[i].length;j++){
-      if(i==j){
-        items.push(<Circle cx={outerTriangle[i][0]} cy={outerTriangle[i][1]} r={r} strokeWidth={strokeWidth*data[i][j]} stroke={colorArray[i]}></Circle>)
+  for(let i = 0; i < buttons.length; i++) {
+    for(let j = 0; j < buttons.length; j++) {
+      if (i == j) {
+        selfLinks.push(<Circle key={`${i}${j}`} cx={outerTriangle[i][0]} cy={outerTriangle[i][1]} r={r} strokeWidth={strokeWidth * data[i][j]} stroke={colorArray[i]}/>)
+        if (data[i][j] > 20) {
+          selfLinks.push(<Circle key={`${i}${j}+`} cx={outerTriangle[i][0]} cy={outerTriangle[i][1]} r={r + ((strokeWidth * data[i][j]) / 2)} fill={colorArray[i]}/>)
+        }
       }
-      if(data[i][j]>0){
-        if(alreadyAdded[j][i]==0){
+      else if (data[i][j] > 0) {
+        if (alreadyAdded[j][i] == 0) {
           //there hasn't been anything added to there, use outer
-          items.push(<Line x1={outerTriangle[i][0]} y1={outerTriangle[i][1]} x2={outerTriangle[j][0]} y2={outerTriangle[j][1]} strokeWidth={strokeWidth*data[i][j]} stroke={colorArray[i]} strokeLinecap={"round"}></Line>)
+          links.push(<Line key={`${i}${j}`} x1={outerTriangle[i][0]} y1={outerTriangle[i][1]} x2={outerTriangle[j][0]} y2={outerTriangle[j][1]} strokeWidth={strokeWidth * data[i][j]} stroke={colorArray[i]} strokeLinecap={"round"}/>)
           alreadyAdded[i][j]=1;
         }
-        else{
+        else {
           //something has been added, use inner
-          items.push(<Line x1={innerTriangle[i][0]} y1={innerTriangle[i][1]} x2={innerTriangle[j][0]} y2={innerTriangle[j][1]} strokeWidth={strokeWidth*data[i][j]} stroke={colorArray[i]} strokeLinecap={"round"}></Line>)
+          links.push(<Line key={`${i}${j}`} x1={innerTriangle[i][0]} y1={innerTriangle[i][1]} x2={innerTriangle[j][0]} y2={innerTriangle[j][1]} strokeWidth={strokeWidth * data[i][j]} stroke={colorArray[i]} strokeLinecap={"round"}/>)
         }
       }
     }
@@ -317,7 +191,8 @@ function Dot ({data, pressHandler}) {
 
   return(
     <Svg height={height} width={width}>
-      {items}
+      {selfLinks}
+      {links}
       {circles}
     </Svg>
   )

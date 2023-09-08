@@ -1,6 +1,5 @@
 import { StyleSheet } from "react-native"
-import {Dimensions} from 'react-native';
-import { back } from "react-native/Libraries/Animated/Easing";
+import { Dimensions } from 'react-native';
 
 let light="#e6e3e1";
 let highlight="#45ad6a";
@@ -19,53 +18,60 @@ let blue="#438ab0";
 let teal="#43b0a9";
 let indigo="#6243b0"
 
-let largeFontSize=40;
+let largeFontSize=32;
 let mediumFontSize=25;
 let smallFontSize=20;
 let tinyFontSize=18;
 
 let minorFont='Gogh-ExtraBold';
 let majorFont='goodlight';
+let baseWidth = Dimensions.get("window").width;
+let baseHeight = Dimensions.get("window").height;
 
 // stylesheet, dark style
 export default StyleSheet.create({
     container: {
         flex: 1,
-        padding: Dimensions.get("window").width*.05,
+        padding: baseWidth * .05,
         backgroundColor: backgroundColor,
     },
+    
     buttonBox: {
         flex: 1,
-        paddingHorizontal: Dimensions.get("window").width*.15,
+        paddingHorizontal: baseWidth*.15,
         backgroundColor: backgroundColor,
     },
+    
     fixToText: {
         flexDirection: 'row',
-        flex:2,
-        margin: 10,
+        flex: 1,
+        margin: baseWidth * (1/45),
         justifyContent: 'space-between',
         alignItems: 'center',
         flexWrap: "wrap",
     },
+    
     bottomLine:{
         borderBottomColor: textColor,
         borderBottomWidth: 3,
     },
+    
     background:{
         flex: 1,
         backgroundColor: backgroundColor,
     },
+    
     scrollView: {
         flex: 1,
     },
+    
     border:{
         borderWidth:10,
         borderColor:highlight,
         alignItems: 'center',
         backgroundColor: backgroundColor,
     },
-
-
+    
     title: {
         alignItems: 'center',
         color: textColor,
@@ -78,6 +84,7 @@ export default StyleSheet.create({
         borderBottomColor: textColor,
         borderBottomWidth: 3,
     },
+    
     header:{
         color: textColor,
         textAlign: "center",
@@ -88,6 +95,7 @@ export default StyleSheet.create({
         position:'relative',
         overflow: 'visible', 
     },
+    
     subheader:{
         color: textColor,
         textAlign: "center",
@@ -98,6 +106,7 @@ export default StyleSheet.create({
         position:'relative',
         overflow: 'visible', 
     },
+    
     regularText:{
         alignItems: 'center',
         color: textColor,
@@ -107,6 +116,7 @@ export default StyleSheet.create({
         flexWrap:'wrap',
         overflow: 'visible', 
     },
+    
     taskItem:{
         color: textColor,
         fontSize: tinyFontSize,
@@ -114,6 +124,7 @@ export default StyleSheet.create({
         fontFamily: minorFont,
         alignItems: 'center',
     },
+    
     taskTitle:{
         backgroundColor:highlight,
         padding: 10,
@@ -125,10 +136,12 @@ export default StyleSheet.create({
         fontFamily: majorFont,
         letterSpacing:2,
     },
+    
     barLine:{
         borderBottomColor: textColor,
         borderBottomWidth: 1,
     },
+   
     tinyText:{
         alignItems: 'center',
         color: textColor,
@@ -138,6 +151,14 @@ export default StyleSheet.create({
         flexWrap:'wrap',
         overflow: 'visible', 
     },
+
+    timelineText:{
+        color: textColor,
+        textAlign: "left",
+        fontSize: tinyFontSize,
+        fontFamily: minorFont,
+    },
+    
     smallLightText:{
         textAlign: "center",
         color: darkTextColor,
@@ -147,6 +168,7 @@ export default StyleSheet.create({
         flexWrap:'wrap',
         overflow: 'hidden',
     },
+    
     tinyLightText:{
         textAlign: "center",
         color: darkTextColor,
@@ -156,8 +178,7 @@ export default StyleSheet.create({
         flexWrap:'wrap',
         overflow: 'hidden',  
     },
-
-
+    
     input:{
         marginBottom:10,
         borderWidth:4,
@@ -170,8 +191,7 @@ export default StyleSheet.create({
         fontFamily: minorFont,
         flexWrap:'wrap',
     },
-
-
+    
     button: {
         alignItems: 'center',
         backgroundColor: midtone,
@@ -187,6 +207,7 @@ export default StyleSheet.create({
         flexWrap:'wrap',
         overflow: 'hidden', 
     },
+    
     smallButton: {
         alignItems: 'center',
         backgroundColor: midtone,
@@ -203,6 +224,7 @@ export default StyleSheet.create({
         flexWrap:'wrap',
         overflow: 'hidden', 
     },
+    
     warningButton:{
         alignItems: 'center',
         backgroundColor: warning,
@@ -219,6 +241,7 @@ export default StyleSheet.create({
         overflow: 'hidden',
         
     },
+    
     lightButton:{
         alignItems: 'center',
         backgroundColor: highlight,
@@ -234,6 +257,7 @@ export default StyleSheet.create({
         flexWrap:'wrap',
         overflow: 'hidden',
     },
+    
     blueButton:{
         alignItems: 'center',
         backgroundColor: blue,
@@ -249,6 +273,7 @@ export default StyleSheet.create({
         flexWrap:'wrap',
         overflow: 'hidden',
     },
+    
     deleteButton:{
         alignItems: 'center',
         backgroundColor: warning,
@@ -263,6 +288,7 @@ export default StyleSheet.create({
         flexWrap:'wrap',
         overflow: 'hidden', 
     },
+    
     bigButton:{
         alignItems: 'center',
         backgroundColor: midtone,
@@ -278,6 +304,7 @@ export default StyleSheet.create({
         flexWrap:'wrap',
         overflow: 'hidden', 
     },
+    
     bigBlueButton:{
         alignItems: 'center',
         backgroundColor: blue,
@@ -293,6 +320,7 @@ export default StyleSheet.create({
         flexWrap:'wrap',
         overflow: 'hidden', 
     },
+    
     buttonTask:{
         backgroundColor: blue,
         borderRadius:15,
@@ -300,15 +328,22 @@ export default StyleSheet.create({
         color: darkTextColor,
     },
 
-
     tableHead: {
         backgroundColor: highlight,
         flex: 1, 
         flexWrap: 'wrap',
-        fontSize:smallFontSize,
+        fontSize: tinyFontSize,
         fontFamily: minorFont,
         textAlign: "center",
     },
+
+    tableHeadText: {
+        color: darkTextColor,
+        fontSize: tinyFontSize,
+        fontFamily: minorFont,
+        textAlign: "center",
+    },
+    
     tableText: { 
         color: textColor,
         fontSize: tinyFontSize,
@@ -319,13 +354,13 @@ export default StyleSheet.create({
         flexWrap: 'wrap',
     },
 
-
     tinyLogo: {
         width: 320*1.2,
         height: 100*1.2,
         resizeMode: 'contain',
         alignSelf: 'center',
     },
+    
     titleLogo:{
         width: 225/3,
         height: 100/3,
@@ -343,6 +378,7 @@ export default StyleSheet.create({
         borderColor:highlight,
         borderWidth:5,
     },
+    
     alertBody:{
         color: textColor,
         textAlign: "center",
@@ -351,6 +387,7 @@ export default StyleSheet.create({
         backgroundColor: backgroundColor,
         overflow: 'hidden', 
     },
+    
     alertText:{
         color: textColor,
         textAlign: "center",
@@ -363,19 +400,18 @@ export default StyleSheet.create({
     modalBox:{
         alignItems: 'center',
         flex: 1,
-        width:Dimensions.get("window").width*.8,
-        height:Dimensions.get("window").height*.6,
-        padding: Dimensions.get("window").width*.05,
+        width:baseWidth*.8,
         backgroundColor: backgroundColor,
-        borderColor:dark,
+        borderColor:highlight,
         borderWidth:5,
         borderRadius:15,
         position: 'absolute', 
-        top: Dimensions.get("window").height*.2, 
-        left: Dimensions.get("window").width*.1, 
+        top: baseHeight*.2, 
+        left: baseWidth*.1, 
     },
+    
     dayInput:{
-        width:Dimensions.get("window").width*.25,
+        width:baseWidth*.25,
         marginBottom:10,
         borderWidth:4,
         color: textColor,
@@ -399,6 +435,7 @@ export default StyleSheet.create({
         padding: 5,
         margin: 10,
     },
+    
     pickerDropdown:{
         backgroundColor: highlight, 
         color: backgroundColor, 
@@ -410,5 +447,29 @@ export default StyleSheet.create({
         padding: 5,
         margin: 10,
     },
+    
+    headerIcon:{
+        alignSelf:'center', 
+        width: 30, 
+        height: 30,
+    },
+    
+    graphIcon:{
+        alignSelf:'center',
+        width: baseWidth * (7.5/18), 
+        height: (baseWidth * (7.5/18)) * (2/3),
+    },
+    
+    graphIconBig:{
+        alignSelf:'center',
+        width: baseWidth * (11/16),
+        height: (baseWidth * (11/16)) * (2/3),
+    },
+    
+    backgroundImage:{
+        alignSelf:'center',
+        width: 380,
+        height: 380,
+    }
 })
 

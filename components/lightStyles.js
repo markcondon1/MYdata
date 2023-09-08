@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native"
-import {Dimensions} from 'react-native';
+import { Dimensions } from 'react-native';
 
 let backgroundColor="#faf5ef";
 let highlight="#63ba83";
@@ -17,10 +17,12 @@ let blue="#438ab0";
 let teal="#43b0a9";
 let indigo="#6243b0"
 
-let largeFontSize=40;
-let mediumFontSize=25;
-let smallFontSize=20;
-let tinyFontSize=18;
+let largeFontSize = 20;
+let mediumFontSize = 25;
+let smallFontSize = 20;
+let tinyFontSize = 18;
+let baseWidth = Dimensions.get("window").width;
+let baseHeight = Dimensions.get("window").height;
 
 let minorFont='Gogh-ExtraBold';
 let majorFont='goodlight';
@@ -283,6 +285,12 @@ export default StyleSheet.create({
         flexWrap:'wrap',
         overflow: 'visible', 
     },
+    timelineText:{
+        color: textColor,
+        textAlign: "left",
+        fontSize: tinyFontSize,
+        fontFamily: minorFont,
+    },
     buttonTask:{
         backgroundColor: blue,
         borderRadius:15,
@@ -391,6 +399,27 @@ export default StyleSheet.create({
         padding: 5,
         margin: 10,
     },
+    headerIcon:{
+        alignSelf:'center', 
+        width: 30, 
+        height: 30
+    },
+    graphIcon:{
+        alignSelf:'center',
+        width: baseWidth * (7.5/18), 
+        height: (baseWidth * (7.5/18)) * (2/3),
+    },
+    
+    graphIconBig:{
+        alignSelf:'center',
+        width: baseWidth * (11/16),
+        height: (baseWidth * (11/16)) * (2/3),
+    },
+    backgroundImage:{
+        alignSelf:'center',
+        width: 380,
+        height: 380,
+    }
 })
 
 
