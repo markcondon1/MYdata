@@ -854,7 +854,7 @@ function NewGraph({ route, navigation }) {
           })}
           
           <TouchableWithoutFeedback onPress={() => { checkGraph() }}>
-            <Text style={styles.smallButton}> Submit </Text>
+            <Text style={styles.smallButton}> Create </Text>
           </TouchableWithoutFeedback>
         </View>
 
