@@ -144,6 +144,7 @@ export default class App extends React.Component {
           <Stack.Screen name="Data Info"      component={DataInfo}        options={backgroundDefault}/>
           <Stack.Screen name="About"          component={About}           options={backgroundDefault}/>
           <Stack.Screen name="Settings"       component={Settings}        options={backgroundDefault}/>
+          <Stack.Screen name="Delete Graph"   component={DeleteGraph}     options={backgroundDefault}/>
         </Stack.Navigator>
       </NavigationContainer>
     );
@@ -694,22 +695,26 @@ function SelectData({navigation}) {
           <Text style={styles.title}> Graphs </Text>
           {asyncStorage.map((graph, i) => {
             return (
-              <View key={i} style={styles.bottomLine}>
+
                 <View style={styles.buttonBox}>
                   <TouchableWithoutFeedback onPress={() => { navigateAndSendDataGraph(graph); }}>
                     <Text style={styles.button}> {graph.Title} </Text>
                   </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback onPress={() => {setKey(graph.Key); throwAlert(true); setAsyncStorage(AsyncCode.getTextArray()); refresh=false;}}>
+                  {/* <TouchableWithoutFeedback onPress={() => {setKey(graph.Key); throwAlert(true); setAsyncStorage(AsyncCode.getTextArray()); refresh=false;}}>
                     <Text style={styles.warningButton}> {"Delete " + graph.Title} </Text>
-                  </TouchableWithoutFeedback>
+                  </TouchableWithoutFeedback> */}
                 </View>
-              </View>
             );
           })}
 
-          <Text style={styles.header}> Add Graph </Text>
+          <Text style={styles.title}> Add Graph </Text>
           <TouchableWithoutFeedback onPress={() => {navigation.navigate('New Graph');}}>
             <Text style={styles.smallButton}> Create New Graph </Text>
+          </TouchableWithoutFeedback>
+
+          
+          <TouchableWithoutFeedback onPress={() => {navigation.navigate('Delete Graph');}}>
+            <Text style={styles.warningButton}> Delete Graph </Text>
           </TouchableWithoutFeedback>
         </View>
           
@@ -898,6 +903,102 @@ function NewGraph({ route, navigation }) {
     </SafeAreaView>
   )
 }
+
+//Delete Graph Screen Code
+function DeleteGraph({route,navigation}){
+
+  const [asyncStorage, setAsyncStorage] = useState([]);
+  const [alert, throwAlert] = useState(false);
+  const [connectionAlert, throwConnectionAlert] = useState(false);
+  
+  // states for the alerts
+  const [key, setKey] = useState("");
+  const [text, setText]= useState('');
+
+  //on Load; restore stuff from Async Storage
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', (e) => {
+      AsyncCode.restoreFromAsync();
+      setAsyncStorage(AsyncCode.getTextArray());
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+  // used to change pages and pass the appropriate information to the graph page.
+  // Param, the raw file of the graph being navigated too
+  const navigateAndSendDataGraph = (item) =>{
+    if(BleCode.isConnected()) {
+      navigation.navigate("Graph", { keyParam: item.Key });
+    }
+    else {
+      setKey(item.Key);
+      throwConnectionAlert(true);
+    }
+  }
+
+  //updates the data of the list of graphs, specifically removes items
+  // if toDo = "Remove", removes the alert. otherwise dismisses the alert
+  const updateData = async(toDo) => {
+    if(toDo == "remove") {
+      AsyncCode.removeItem(key);
+      if(GLOBAL.BUTTON0KEY == key) {
+        Console.log("Same Key");
+        GLOBAL.BUTTON0KEY == null;
+      }
+      if(GLOBAL.BUTTON1KEY == key) {
+        Console.log("Same Key");
+        GLOBAL.BUTTON0KEY == null;
+      }
+      if(GLOBAL.BUTTON2KEY == key) {
+        Console.log("Same Key");
+        GLOBAL.BUTTON0KEY == null;
+      }
+    }
+    AsyncCode.restoreFromAsync();
+    setAsyncStorage(AsyncCode.getTextArray());
+    throwAlert(false);
+  }
+  return(
+<SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+        <View>
+          <Text style={styles.title}> Select a Graph to Delete </Text>
+          {asyncStorage.map((graph, i) => {
+            return (
+
+                <View style={styles.buttonBox}>
+
+                  <TouchableWithoutFeedback onPress={() => {setKey(graph.Key); throwAlert(true); setAsyncStorage(AsyncCode.getTextArray()); refresh=false;}}>
+                    <Text style={styles.warningButton}> {"Delete " + graph.Title} </Text>
+                  </TouchableWithoutFeedback>
+                </View>
+            );
+          })}
+        </View>
+    {/* Delete Graph */}
+          <AwesomeAlert
+          show={alert}
+          showProgress={false}
+          title="Delete Graph"
+          message= {"Confirm Deletion For This Graph?"}
+          closeOnTouchOutside={false}
+          closeOnHardwareBackPress={true}
+          showCancelButton={true}
+          showConfirmButton={true}
+          confirmText="Delete"
+          confirmButtonColor="#E07A5F"
+          cancelButtonColor='#63ba83'
+          contentContainerStyle={styles.alert}
+          messageStyle={styles.alertBody}
+          titleStyle={styles.alertText}
+          onConfirmPressed={() => { updateData("remove"); }}
+          onCancelPressed={()=> { setAsyncStorage(AsyncCode.getTextArray()); throwAlert(false); }}
+        />
+       
+      </ScrollView>
+    </SafeAreaView>
+  )
+  }
 
 // Displays a graph
 function Graph({ route, navigation }) {
