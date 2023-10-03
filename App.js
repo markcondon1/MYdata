@@ -145,6 +145,7 @@ export default class App extends React.Component {
           <Stack.Screen name="About"          component={About}           options={backgroundDefault}/>
           <Stack.Screen name="Settings"       component={Settings}        options={backgroundDefault}/>
           <Stack.Screen name="Delete Graph"   component={DeleteGraph}     options={backgroundDefault}/>
+          <Stack.Screen name="Duplicate Graph"component={DuplicateGraph}  options={backgroundDefault}/>
         </Stack.Navigator>
       </NavigationContainer>
     );
@@ -904,6 +905,11 @@ function NewGraph({ route, navigation }) {
   )
 }
 
+//Duplicate Graph Screen Code
+function DuplicateGraph({ route, navigation }) {
+  // empty for now
+}
+
 //Delete Graph Screen Code
 function DeleteGraph({route,navigation}){
 
@@ -1394,6 +1400,10 @@ function GraphSettings({ route, navigation }) {
               </View>
             );
           })}
+
+          <TouchableWithoutFeedback onPress={() => {navigation.navigate('Duplicate Graph');}}>
+            <Text style={styles.smallButton}> Duplicate Graph </Text>
+          </TouchableWithoutFeedback>
           
           <TouchableOpacity opacity={0.2} onPress={() => { checkGraph() }}>
             <Text style={styles.smallButton}> Submit </Text>
