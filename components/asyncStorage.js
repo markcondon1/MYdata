@@ -154,6 +154,11 @@ class AsyncStorageCode {
     // }
   }
 
+  changeDataPoint = (key, dataPoint, value) => {
+    let graph = this.getGraph(key);
+    // empty for now
+  }
+  
   changeDataPointDescription = (key, dataPoint, description) => {
     let graph = this.getGraph(key);
     for (let i = 0; i < graph.Data.length; i++) {

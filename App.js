@@ -1459,13 +1459,17 @@ function EditData({ route, navigation }) {
   const [filteredData, setFilteredData] = useState(graph.Data);
 
   const [alertDelete, throwAlertDelete] = useState(false);
+  const [alertEdit, throwAlertEdit] = useState(false);
   const [alertSuccess, throwAlertSuccess] = useState(false);
+  const [editSuccess, throwEditSuccess] = useState(false);
 
   const [dataDelete, setDataDelete] = useState();
   const [modal, throwModal] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
   const [dataPoint, setDataPoint] = useState();
   const [dataDesc, setDataDesc] = useState("");
+  const [editModal, throwEditModal] = useState(false);
+  const [editModalTitle, setEditModalTitle] = useState("");
 
   const [searchDate, setSearchDate] = useState(["", "", ""]);
   let placeholders = ["Day", "Month", "Year"];
@@ -1507,6 +1511,11 @@ function EditData({ route, navigation }) {
     filterData();
   }
 
+  const editDataPoint = async(value) => {
+    AsyncCode.changeDataPoint(keyParam, value);
+    throwEditSuccess(true);
+  }
+
   //Adds a description to a data entry
   const addDataPointDescription = async(item, description) => {
     throwAlertSuccess(true);
@@ -1545,6 +1554,9 @@ function EditData({ route, navigation }) {
                 <Text style={styles.tinyText}> {entry.Date.toLocaleString()} </Text>
                 <Text style={styles.tinyText}> {"Button: " + graph.Buttons[entry.ButtonID].ButtonName} </Text>
                 <View style={styles.fixToText}>
+                <TouchableWithoutFeedback onPress={() => { setDataPoint(entry); setEditModalTitle(entry.Date.toLocaleString()); throwEditModal(true);}}>
+                    <Text style={styles.lightButton}> Edit Data Point </Text>
+                  </TouchableWithoutFeedback>
                   <TouchableWithoutFeedback onPress={() => { setDataPoint(entry); setModalTitle(entry.Date.toLocaleString()); throwModal(true); }}>
                     <Text style={styles.lightButton}> Add Description </Text>
                   </TouchableWithoutFeedback>
@@ -1572,6 +1584,23 @@ function EditData({ route, navigation }) {
             onConfirmPressed={() => { deleteDataPoint(); }}
             onCancelPressed={()=> { throwAlertDelete(false); }}
           />
+
+          <AwesomeAlert
+            show={alertEdit}
+            title="Edit Data"
+            message= {"Edit This Data Point?"}
+            closeOnTouchOutside={false}
+            closeOnHardwareBackPress={false}
+            showCancelButton={true}
+            showConfirmButton={true}
+            confirmText="Edit"
+            confirmButtonColor="#63ba83"
+            contentContainerStyle={styles.alert}
+            messageStyle={styles.alertBody}
+            titleStyle={styles.alertText}
+            onConfirmPressed={() => { editDataPoint(); }}
+            onCancelPressed={()=> { throwAlertEdit(false); }}
+          />
         
           <AwesomeAlert
             show={alertSuccess}
@@ -1587,6 +1616,22 @@ function EditData({ route, navigation }) {
             messageStyle={styles.alertBody}
             titleStyle={styles.alertText}
             onConfirmPressed={() => { throwAlertSuccess(false); throwModal(false); }}
+          />
+
+          <AwesomeAlert
+            show={editSuccess}
+            showProgress={false}
+            title={"Action Successful"}
+            message= {"Time Changed"}
+            closeOnTouchOutside={false}
+            closeOnHardwareBackPress={false}
+            showConfirmButton={true}
+            confirmText="Okay"
+            confirmButtonColor="#63ba83"
+            contentContainerStyle={styles.alert}
+            messageStyle={styles.alertBody}
+            titleStyle={styles.alertText}
+            onConfirmPressed={() => { throwEditSuccess(false); throwEditModal(false); }}
           />
 
           <Modal animationType="Slide" transparent={true} visible={modal}>
@@ -1606,6 +1651,26 @@ function EditData({ route, navigation }) {
               </View>
             </View>
           </Modal>
+
+          <Modal animationType="Slide" transparent={true} visible={editModal}>
+            <View style ={styles.modalBox}>
+              <Text style ={styles.header}> {editModalTitle} </Text>
+              <Text style={styles.subheader}> What would you like to change the time to?</Text>
+              <Text style={styles.normal}> Please enter the time as 4 numbers </Text>
+              <Text style={styles.normal}> example: 1159 </Text>
+              <TextInput keyboardType='number-pad' onSubmitEditing={text => editDataPoint(text)} placeholder="Time" style={styles.input} editable maxLength={4}/>
+              
+              <View style={styles.fixToText}>
+                <TouchableOpacity onPress={() => (editDataPoint(dataPoint, setCurData))}>
+                  <Text style={styles.smallButton}> Submit </Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => (throwEditModal(false))}>
+                  <Text style={styles.warningButton}> Cancel </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+
         </View>
       </ScrollView>
     </SafeAreaView>
