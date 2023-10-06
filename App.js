@@ -1657,9 +1657,7 @@ function EditData({ route, navigation }) {
               <Text style ={styles.header}> {editModalTitle} </Text>
               <Text style={styles.subheader}> What would you like to change the time to?</Text>
               <Text style={styles.normal}> Please enter the time as 4 numbers </Text>
-              <Text style={styles.normal}> example: 1159 </Text>
-              <TextInput keyboardType='number-pad' onSubmitEditing={text => editDataPoint(text)} placeholder="Time" style={styles.input} editable maxLength={4}/>
-              
+              <TextInput keyboardType='number-pad' onSubmitEditing={text => editDataPoint(text)} placeholder=" example: 1159 " style={styles.input} editable maxLength={4} />
               <View style={styles.fixToText}>
                 <TouchableOpacity onPress={() => (editDataPoint(dataPoint, setCurData))}>
                   <Text style={styles.smallButton}> Submit </Text>
