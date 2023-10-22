@@ -1,6 +1,6 @@
 // React Native Imports
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { ImageBackground, LogBox, Text, View, FlatList, TouchableWithoutFeedback, TouchableOpacity, ScrollView, StyleSheet, Image, NativeModules, NativeEventEmitter, SectionList, TextInput, Appearance, Dimensions, Linking, Modal } from 'react-native';
+import { ImageBackground, LogBox, Text, View, FlatList, TouchableWithoutFeedback, TouchableOpacity, ScrollView, StyleSheet, Image, NativeModules, NativeEventEmitter, SectionList, TextInput, Appearance, Dimensions, Linking, Modal, KeyboardAvoidingView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { PermissionsAndroid, Platform, BackHandler } from "react-native";
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
@@ -145,7 +145,7 @@ export default class App extends React.Component {
           <Stack.Screen name="About"          component={About}           options={backgroundDefault}/>
           <Stack.Screen name="Settings"       component={Settings}        options={backgroundDefault}/>
           <Stack.Screen name="Delete Graph"   component={DeleteGraph}     options={backgroundDefault}/>
-          <Stack.Screen name="Duplicate Graph"component={DuplicateGraph}  options={backgroundDefault}/>
+          
         </Stack.Navigator>
       </NavigationContainer>
     );
@@ -905,11 +905,6 @@ function NewGraph({ route, navigation }) {
   )
 }
 
-//Duplicate Graph Screen Code
-function DuplicateGraph({ route, navigation }) {
-  // empty for now
-}
-
 //Delete Graph Screen Code
 function DeleteGraph({route,navigation}){
 
@@ -1309,6 +1304,12 @@ function GraphSettings({ route, navigation }) {
   const { keyParam } = route.params;
   let graph = AsyncCode.getGraph(keyParam);
 
+  const [modal, throwModal] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
+
+  const [alertDupe, alertDuplicate] = useState(false);
+  const [alertSuccess, throwAlertSuccess] = useState(false);
+
   const [name, setName] = useState(graph.Title);
   const [desc, setDesc] = useState(graph.Description);
   const [type, setType] = useState(graph.GraphType);
@@ -1375,6 +1376,12 @@ function GraphSettings({ route, navigation }) {
     navigation.pop();
   }
 
+  const duplicateGraph = () => {
+    AsyncCode.dupeGraph();
+    throwAlertSuccess(true);
+  }
+
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
@@ -1401,7 +1408,7 @@ function GraphSettings({ route, navigation }) {
             );
           })}
 
-          <TouchableWithoutFeedback onPress={() => {navigation.navigate('Duplicate Graph');}}>
+          <TouchableWithoutFeedback onPress={() => {throwModal(true)}}>
             <Text style={styles.smallButton}> Duplicate Graph </Text>
           </TouchableWithoutFeedback>
           
@@ -1445,6 +1452,38 @@ function GraphSettings({ route, navigation }) {
           onConfirmPressed= {() => { throwAlertConfirm(false); submitChanges(); }}
           onCancelPressed= {()=> { throwAlertConfirm(false); }}
         />
+      
+        <AwesomeAlert
+          show={alertSuccess}
+          showProgress={false}
+          title={"Action Successful"}
+          message= {"Graph Duplicated"}
+          closeOnTouchOutside={false}
+          closeOnHardwareBackPress={false}
+          showConfirmButton={true}
+          confirmText="Okay"
+          confirmButtonColor="#63ba83"
+          contentContainerStyle={styles.alert}
+          messageStyle={styles.alertBody}
+          titleStyle={styles.alertText}
+          onConfirmPressed={() => { throwAlertSuccess(false); throwModal(false); }}
+        />
+
+        <Modal animationType="Slide" transparent={true} visible={modal}>
+          <View style ={styles.modalBox}>
+            <Text style ={styles.header}> {modalTitle} </Text>
+            <Text style={styles.subheader}> {"Do you want to duplicate " + graph.Title + "?"}</Text>
+            <View style={styles.fixToText}>
+              <TouchableOpacity onPress={() => (duplicateGraph())}>
+                <Text style={styles.smallButton}> Duplicate </Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => (throwModal(false))}>
+                <Text style={styles.warningButton}> Cancel </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+          
       </ScrollView>
     </SafeAreaView>
   );
@@ -1462,6 +1501,8 @@ function EditData({ route, navigation }) {
   const [alertEdit, throwAlertEdit] = useState(false);
   const [alertSuccess, throwAlertSuccess] = useState(false);
   const [editSuccess, throwEditSuccess] = useState(false);
+
+  const scrollRef = useRef()
 
   const [dataDelete, setDataDelete] = useState();
   const [modal, throwModal] = useState(false);
@@ -1639,7 +1680,13 @@ function EditData({ route, navigation }) {
               <Text style={styles.header}> {modalTitle} </Text>
               <Text style={styles.subheader}> Set Description </Text>
               
-              <TextInput multiline numberOfLines={4} onChangeText={text => setDataDesc(text)} placeholder="Data Description" style={styles.input} editable maxLength={5000}/>
+            <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column',justifyContent: 'center',}} behavior="padding" enabled   keyboardVerticalOffset={100}>
+            <ScrollView>
+              <View style={styles.row}>
+              <TextInput multiline numberOfLines={4} onChangeText={text => setDataDesc(text)} placeholder="Data Description" style={styles.input} editable maxLength={5000} />
+              </View>
+            </ScrollView>
+            </KeyboardAvoidingView>
 
               <View style={styles.fixToText}>
                 <TouchableOpacity onPress={() => (addDataPointDescription(dataPoint, dataDesc))}>
