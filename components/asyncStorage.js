@@ -170,6 +170,36 @@ class AsyncStorageCode {
     }
   }
 
+  // duplicate existing graph and store in text arrray
+  dupeGraph = (keyToDuplicate) =>{
+    // temporary empty data set
+    // comment out to duplicate bar graph and button order
+    let TempDataNew = [];
+
+    // get graph based on key
+    const existingGraph = this.getGraph(keyToDuplicate);
+    // create a new key for duplicated graph
+    const newKey = Math.random().toString();
+
+    // duplicate the properties of the existing graph
+    const newGraph = {
+    Key: newKey,
+    Title: "Copy of " + existingGraph.Title,
+    Description: existingGraph.Description,
+    GraphType: existingGraph.GraphType,
+    Buttons: [...existingGraph.Buttons],
+    // Data: [...existingGraph.Data]
+    Data: TempDataNew
+  };
+
+
+  // add duplicated graph to TextArray
+  TextArray.push(newGraph);
+  //store TextArray in AsyncStorage
+  this.setAllData();
+
+  }
+
   //moves the data in TempArray into the async storage.
   setAllData(){
     const stringifiedText = JSON.stringify(TextArray);
