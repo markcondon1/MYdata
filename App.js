@@ -1377,7 +1377,7 @@ function GraphSettings({ route, navigation }) {
   }
 
   const duplicateGraph = () => {
-    AsyncCode.dupeGraph();
+    AsyncCode.dupeGraph(keyParam);
     throwAlertSuccess(true);
   }
 
