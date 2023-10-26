@@ -1516,6 +1516,9 @@ function EditData({ route, navigation }) {
   let placeholders = ["Day", "Month", "Year"];
   let lengths = [2, 2, 4];
 
+  var width = Dimensions.get('window').width;
+  var height = Dimensions.get('window').height;
+
   //Updates the search parameters
   const updateSearch = (date, index) => {
     let tempSearch = searchDate;
@@ -1676,25 +1679,35 @@ function EditData({ route, navigation }) {
           />
 
           <Modal animationType="Slide" transparent={true} visible={modal}>
-            <View style={styles.modalBox}>
-              <Text style={styles.header}> {modalTitle} </Text>
-              <Text style={styles.subheader}> Set Description </Text>
-              
-            <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column',justifyContent: 'center',}} behavior="padding" enabled   keyboardVerticalOffset={100}>
+          <View style={styles.container}>
+            <View style={
+              {flex: 1,
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}>
+              <Text style={styles.header}> Set Description </Text>
+              <Text style={styles.subheader}> {modalTitle} </Text>
+            <KeyboardAvoidingView style={{ flex: 6, flexDirection: 'column',justifyContent: 'space-around',}} behavior="padding" enabled keyboardVerticalOffset={0}>
             <ScrollView>
-              <View style={styles.row}>
-              <TextInput multiline numberOfLines={4} onChangeText={text => setDataDesc(text)} placeholder="Data Description" style={styles.input} editable maxLength={5000} />
+                <View style={{width: width*0.9, height: height, flex:1}}>
+              <TextInput multiline numberOfLines={8} onChangeText={text => setDataDesc(text)} placeholder="Tap to start writing a description" style={styles.input} editable maxLength={5000} />
               </View>
             </ScrollView>
             </KeyboardAvoidingView>
 
               <View style={styles.fixToText}>
                 <TouchableOpacity onPress={() => (addDataPointDescription(dataPoint, dataDesc))}>
-                  <Text style={styles.smallButton}> Submit </Text>
+                  <View style={{flex: 1, justifyContent: 'flex-end'}}>    
+                  <Text style={styles.smallButton}> Submit </Text> 
+                  </View>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => (throwModal(false))}>
+                <View style={{flex: 1, justifyContent: 'flex-end'}}>
                   <Text style={styles.warningButton}> Cancel </Text>
+                  </View>
                 </TouchableOpacity>
+              </View>
               </View>
             </View>
           </Modal>
