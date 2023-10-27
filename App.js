@@ -15,6 +15,7 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import ViewShot from "react-native-view-shot";
 import CameraRoll from "@react-native-community/cameraroll";
 import email from 'react-native-email'
+import { SearchBar } from 'react-native-elements';
 import BleManager, { start } from 'react-native-ble-manager';
 import BluetoothStateManager from 'react-native-bluetooth-state-manager';
 
@@ -146,6 +147,7 @@ export default class App extends React.Component {
           <Stack.Screen name="Settings"       component={Settings}        options={backgroundDefault}/>
           <Stack.Screen name="Delete Graph"   component={DeleteGraph}     options={backgroundDefault}/>
           <Stack.Screen name="Duplicate Graph"component={DuplicateGraph}  options={backgroundDefault}/>
+          <Stack.Screen name="Edit Data Point"component={EditDataPoint}   options={backgroundDefault}/>
         </Stack.Navigator>
       </NavigationContainer>
     );
@@ -1463,13 +1465,27 @@ function EditData({ route, navigation }) {
 
   const [dataDelete, setDataDelete] = useState();
   const [modal, throwModal] = useState(false);
+  const [modalEdit, throwModalEdit] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
   const [dataPoint, setDataPoint] = useState();
   const [dataDesc, setDataDesc] = useState("");
+  const [dataValue, setDataValue] = useState("");
 
   const [searchDate, setSearchDate] = useState(["", "", ""]);
   let placeholders = ["Day", "Month", "Year"];
   let lengths = [2, 2, 4];
+
+  const [asyncStorage, setAsyncStorage] = useState();
+
+  const buttonOptions = [
+    <Picker.Item key={-1} label={"Set Data Point Value"} value={null} style={styles.pickerDropdown}/>
+  ];
+
+  for (let i = 0; i< graph.Buttons.length; i++)
+  {
+    buttonOptions.push(<Picker.Item key={i} label={graph.Buttons[i].ButtonName} value={graph.Buttons[i].ButtonName} style={styles.pickerDropdown}/>)
+  };
+
 
   //Updates the search parameters
   const updateSearch = (date, index) => {
@@ -1524,6 +1540,36 @@ function EditData({ route, navigation }) {
     // }
   }
 
+  //updates the data of the list of graphs, specifically removes items
+  // if toDo = "Remove", removes the alert. otherwise dismisses the alert
+  const updateData = async(toDo) => {
+    if(toDo == "remove") {
+      AsyncCode.removeItem(key);
+      if(GLOBAL.BUTTON0KEY == key) {
+        Console.log("Same Key");
+        GLOBAL.BUTTON0KEY == null;
+      }
+      if(GLOBAL.BUTTON1KEY == key) {
+        Console.log("Same Key");
+        GLOBAL.BUTTON0KEY == null;
+      }
+      if(GLOBAL.BUTTON2KEY == key) {
+        Console.log("Same Key");
+        GLOBAL.BUTTON0KEY == null;
+      }
+    }
+    AsyncCode.restoreFromAsync();
+    setAsyncStorage(AsyncCode.getTextArray());
+    //throwAlert(false);
+  }
+
+  const changeDataButton = async(item, newButton) => {
+    AsyncCode.editDataPointButtonValue(keyParam, item, 0);
+    setCurData(AsyncCode.getGraph(keyParam).Data);
+    filterData();
+    
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
@@ -1548,6 +1594,11 @@ function EditData({ route, navigation }) {
                   <TouchableWithoutFeedback onPress={() => { setDataPoint(entry); setModalTitle(entry.Date.toLocaleString()); throwModal(true); }}>
                     <Text style={styles.lightButton}> Add Description </Text>
                   </TouchableWithoutFeedback>
+
+                  <TouchableWithoutFeedback onPress={() => { setDataPoint(entry); setModalTitle("Edit Data Point"); throwModalEdit(true); }}>
+                    <Text style={styles.lightButton}> Edit Data Point </Text>
+                  </TouchableWithoutFeedback>
+
                   <TouchableWithoutFeedback onPress={() => { setDataDelete(entry); throwAlertDelete(true); }}>
                     <Text style={styles.warningButton}> Delete </Text>
                   </TouchableWithoutFeedback>
@@ -1606,11 +1657,54 @@ function EditData({ route, navigation }) {
               </View>
             </View>
           </Modal>
+
+          <Modal animationType="Slide" transparent={true} visible={modalEdit}>
+            <View style={styles.modalBox}>
+              <Text style={styles.header}> {modalTitle} </Text>
+              <Text style={styles.subheader}> Select Data Value </Text>
+              
+              <Picker style={styles.picker} selectedValue={"Picker"} mode="dropdown" ionValueChange={(item) => (setDataValue(item))}> 
+            {buttonOptions}
+          </Picker>
+
+          <TouchableOpacity onPress={() => (changeDataButton(dataPoint, 0))}>
+                  <Text style={styles.smallButton}> Submit </Text>
+                </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => (throwModalEdit(false))}>
+                  <Text style={styles.warningButton}> Cancel </Text>
+                </TouchableOpacity>
+            </View>
+          </Modal>
+
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
+
+function EditDataPoint({ route, navigation }){
+  // const { keyParam } = route.params;
+  // let graph = AsyncCode.getGraph(keyParam);
+
+  // const [dataPoint, setDataPoint] = useState();
+  // const [dataDesc, setDataDesc] = useState("");
+
+
+  // return (
+  //   <SafeAreaView style={styles.container}>
+  //     <ScrollView style={styles.scrollView}>
+  //       <View>
+  //               <Text style={styles.tinyText}> {entry.Date.toLocaleString()} </Text>
+  //               {/* <Text style={styles.tinyText}> {"Button: " + graph.Buttons[entry.ButtonID].ButtonName} </Text> */}
+  //       </View>
+  //     </ScrollView>
+  //   </SafeAreaView>
+  // );
+
+}
+
+
 
 //Displays any data descriptions present in the current graph
 function DataInfo({ route, navigation }) {

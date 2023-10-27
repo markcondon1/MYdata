@@ -5977,6 +5977,8 @@
     "jscodeshift" "^0.13.1"
     "nullthrows" "^1.1.1"
 
+
+
 "react-native-email@^2.1.0":
   "integrity" "sha512-k/J3HrYfkCy6GBjOY8vQWyvrtaYDZBGPV5sWMPiKKPh5tTcJbgUweOBsru5dM8C+fZkBommAOTxwrSg+0wX7gw=="
   "resolved" "https://registry.npmjs.org/react-native-email/-/react-native-email-2.1.0.tgz"

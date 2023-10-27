@@ -3,6 +3,7 @@ import { kMaxLength } from 'buffer';
 import { keyExtractor } from 'react-native/Libraries/Lists/VirtualizeUtils';
 
 import GLOBAL from './global.js';
+import { useState } from 'react';
 
 const asyncStorageKeyGraphs = '@text';
 const asyncStorageKeyDefaults="@defaults";
@@ -128,6 +129,8 @@ class AsyncStorageCode {
       }
     }
 
+    
+
 
     // for (let i =0; i<TextArray.length;i++){
     //   if(key==TextArray[i].Key){
@@ -152,6 +155,35 @@ class AsyncStorageCode {
     //     }
     //   }
     // }
+  }
+
+  editDataPointButtonValue = (key, dataPoint, newButton) => {
+    //const [validButton, throwValidButton] = useState(false);
+    console.log("Enter Function")
+    let graph = this.getGraph(key);
+    // for(let i = 0; i<graph.Buttons.length;i++)
+    // {
+    //   if(graph.ButtonID = newButton)
+    //   {
+    //      //throwValidButton = true
+    //   }
+    // }
+   // if(validButton)
+    //{
+    for (let i = 0; i < graph.Data.length; i++){
+      if (graph.Data[i].Date.getTime() == dataPoint.Date.getTime()){
+
+          console.log(graph.Data[i].ButtonName)
+          let entry = {Date: graph.Data[i].Date, ButtonID: 2};
+        this.addToData(key, entry);
+        graph.Data.splice(i, 1);
+        i = graph.Data.length;
+
+      }
+
+      
+   // }
+  }
   }
 
   changeDataPointDescription = (key, dataPoint, description) => {
