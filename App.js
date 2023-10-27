@@ -1605,7 +1605,7 @@ function EditData({ route, navigation }) {
                 <Text style={styles.tinyText}> {"Button: " + graph.Buttons[entry.ButtonID].ButtonName} </Text>
                 {/* Tap on description to display full description for all descriptions. 
                 Tap again to go back to brief descriptions */}
-                <TouchableWithoutFeedback onPress={toggleNumLines} onPressOut={toggleNumLines}>  
+                <TouchableWithoutFeedback onPress={toggleNumLines}>  
                 {/* BY DEFAULT, display only 2 lines of the description as a preview*/}
                   <Text numberOfLines={textShown ? undefined: 2}
                   ellipsizeMode='tail' // determines which part of the description is cut off to create preview
