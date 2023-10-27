@@ -118,7 +118,7 @@ export default class App extends React.Component {
       styles = darkStyles;
     }
 
-    //AsyncCode.addBigData();
+    // AsyncCode.addBigData();
     this.getStuff();
     let defaults = AsyncCode.getAsyncDefaults();
     GLOBAL.BUTTON0KEY = defaults[0].button0Key;
@@ -1519,6 +1519,12 @@ function EditData({ route, navigation }) {
   var width = Dimensions.get('window').width;
   var height = Dimensions.get('window').height;
 
+  // constants for displaying the entirety of the description, or a brief preview of description
+  const [textShown, showText] = useState(false); // show/don't show full description
+  const toggleNumLines = () => {
+  showText(!textShown);
+  }
+
   //Updates the search parameters
   const updateSearch = (date, index) => {
     let tempSearch = searchDate;
@@ -1597,6 +1603,15 @@ function EditData({ route, navigation }) {
               <View key={i} style={styles.barLine}>
                 <Text style={styles.tinyText}> {entry.Date.toLocaleString()} </Text>
                 <Text style={styles.tinyText}> {"Button: " + graph.Buttons[entry.ButtonID].ButtonName} </Text>
+                {/* Tap on description to display full description for all descriptions. 
+                Tap again to go back to brief descriptions */}
+                <TouchableWithoutFeedback onPress={toggleNumLines} onPressOut={toggleNumLines}>  
+                {/* BY DEFAULT, display only 2 lines of the description as a preview*/}
+                  <Text numberOfLines={textShown ? undefined: 2}
+                  ellipsizeMode='tail' // determines which part of the description is cut off to create preview
+                  style={styles.tinyText}>
+                  {"Description: " + entry.Description} </Text>
+                </TouchableWithoutFeedback>
                 <View style={styles.fixToText}>
                 <TouchableWithoutFeedback onPress={() => { setDataPoint(entry); setEditModalTitle(entry.Date.toLocaleString()); throwEditModal(true);}}>
                     <Text style={styles.lightButton}> Edit Data Point </Text>
