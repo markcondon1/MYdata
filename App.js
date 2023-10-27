@@ -1663,8 +1663,7 @@ function EditData({ route, navigation }) {
               <Text style={styles.header}> {modalTitle} </Text>
               <Text style={styles.subheader}> Select Data Value </Text>
               
-              <Picker style={styles.picker} selectedValue={"Picker"} mode="dropdown" ionValueChange={(item) => (setDataValue(item))}> 
-            {buttonOptions}
+              <Picker style={styles.picker} selectedValue={"Picker"} mode="dropdown" ionValueChange={(item) => (setDataValue(item))}> {buttonOptions}
           </Picker>
 
           <TouchableOpacity onPress={() => (changeDataButton(dataPoint, 0))}>
