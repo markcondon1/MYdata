@@ -1590,6 +1590,18 @@ function EditData({ route, navigation }) {
               <View key={i} style={styles.barLine}>
                 <Text style={styles.tinyText}> {entry.Date.toLocaleString()} </Text>
                 <Text style={styles.tinyText}> {"Button: " + graph.Buttons[entry.ButtonID].ButtonName} </Text>
+<<<<<<< HEAD
+=======
+                {/* Tap on description to display full description for all descriptions. 
+                Tap again to go back to brief descriptions */}
+                <TouchableWithoutFeedback onPress={toggleNumLines}>  
+                {/* BY DEFAULT, display only 2 lines of the description as a preview*/}
+                  <Text numberOfLines={textShown ? undefined: 2}
+                  ellipsizeMode='tail' // determines which part of the description is cut off to create preview
+                  style={styles.tinyText}>
+                  {"Description: " + entry.Description} </Text>
+                </TouchableWithoutFeedback>
+>>>>>>> cfdde244e84441290759de7a78ee991aa099f84b
                 <View style={styles.fixToText}>
                   <TouchableWithoutFeedback onPress={() => { setDataPoint(entry); setModalTitle(entry.Date.toLocaleString()); throwModal(true); }}>
                     <Text style={styles.lightButton}> Add Description </Text>
