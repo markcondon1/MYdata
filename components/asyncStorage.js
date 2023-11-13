@@ -215,8 +215,7 @@ class AsyncStorageCode {
     Description: existingGraph.Description,
     GraphType: existingGraph.GraphType,
     Buttons: [...existingGraph.Buttons],
-    // Data: [...existingGraph.Data]
-    Data: TempDataNew
+    Data: [...existingGraph.Data]
   };
 
 

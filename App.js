@@ -1,6 +1,6 @@
 // React Native Imports
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { ImageBackground, LogBox, Text, View, FlatList, TouchableWithoutFeedback, TouchableOpacity, ScrollView, StyleSheet, Image, NativeModules, NativeEventEmitter, SectionList, TextInput, Appearance, Dimensions, Linking, Modal } from 'react-native';
+import { ImageBackground, LogBox, Text, View, FlatList, TouchableWithoutFeedback, TouchableOpacity, ScrollView, StyleSheet, Image, NativeModules, NativeEventEmitter, SectionList, TextInput, Appearance, Dimensions, Linking, Modal, KeyboardAvoidingView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { PermissionsAndroid, Platform, BackHandler } from "react-native";
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
@@ -38,6 +38,8 @@ import Triskelion from './components/GraphLibraries/triskelion.js';
 import ChessClock from './components/GraphLibraries/chessClock.js';
 import StockMarket from './components/GraphLibraries/stockMarket.js';
 import Dandelion from "./components/GraphLibraries/dandelion.js";
+import TallyMark from "./components/GraphLibraries/tallyMark.js"
+
  
 // const BleManagerModule = NativeModules.BleManager;
 // const bleEmitter = new NativeEventEmitter(BleManagerModule);
@@ -56,6 +58,7 @@ const graphLibrary = [
   { name: "Stock Market", image: require('./assets/StockMarket.png'), description: "Displays the number of times each button was pressed each day" },
   { name: "Timeline", image: require('./assets/Timeline.png'), description: "Displays when buttons are pressed each day." },
   { name: "Triskelion", image: require('./assets/Triskelion.png'), description: "Displays the number of button pairs pressed." },
+  { name: "Tally Marks", image: require('./assets/Triskelion.png'), description: "Displays the number of times each button is pressed." },
 ]
 
 //List of graphs for dropdowns
@@ -119,7 +122,7 @@ export default class App extends React.Component {
       styles = darkStyles;
     }
 
-    //AsyncCode.addBigData();
+    // AsyncCode.addBigData();
     this.getStuff();
     let defaults = AsyncCode.getAsyncDefaults();
     GLOBAL.BUTTON0KEY = defaults[0].button0Key;
@@ -146,7 +149,6 @@ export default class App extends React.Component {
           <Stack.Screen name="About"          component={About}           options={backgroundDefault}/>
           <Stack.Screen name="Settings"       component={Settings}        options={backgroundDefault}/>
           <Stack.Screen name="Delete Graph"   component={DeleteGraph}     options={backgroundDefault}/>
-          <Stack.Screen name="Duplicate Graph"component={DuplicateGraph}  options={backgroundDefault}/>
           <Stack.Screen name="Edit Data Point"component={EditDataPoint}   options={backgroundDefault}/>
         </Stack.Navigator>
       </NavigationContainer>
@@ -907,10 +909,6 @@ function NewGraph({ route, navigation }) {
   )
 }
 
-//Duplicate Graph Screen Code
-function DuplicateGraph({ route, navigation }) {
-  // empty for now
-}
 
 //Delete Graph Screen Code
 function DeleteGraph({route,navigation}){
@@ -1210,6 +1208,7 @@ function Graph({ route, navigation }) {
             <ChessClock rawData={graph} styles={styles} name="Chess Clock"/>
             <StockMarket rawData={graph} styles={styles} name="Stock Market"/>
             <Dandelion rawData={graph} styles={styles} name="Dandelion" />
+            <TallyMark rawData={graph} styles={styles} name="Tally Marks" />
           </GraphSwitch>
         </ViewShot>
         
@@ -1311,6 +1310,12 @@ function GraphSettings({ route, navigation }) {
   const { keyParam } = route.params;
   let graph = AsyncCode.getGraph(keyParam);
 
+  const [modal, throwModal] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
+
+  const [alertDupe, alertDuplicate] = useState(false);
+  const [alertSuccess, throwAlertSuccess] = useState(false);
+
   const [name, setName] = useState(graph.Title);
   const [desc, setDesc] = useState(graph.Description);
   const [type, setType] = useState(graph.GraphType);
@@ -1377,6 +1382,12 @@ function GraphSettings({ route, navigation }) {
     navigation.pop();
   }
 
+  const duplicateGraph = () => {
+    AsyncCode.dupeGraph(keyParam);
+    throwAlertSuccess(true);
+  }
+
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
@@ -1403,7 +1414,7 @@ function GraphSettings({ route, navigation }) {
             );
           })}
 
-          <TouchableWithoutFeedback onPress={() => {navigation.navigate('Duplicate Graph');}}>
+          <TouchableWithoutFeedback onPress={() => {throwModal(true)}}>
             <Text style={styles.smallButton}> Duplicate Graph </Text>
           </TouchableWithoutFeedback>
           
@@ -1447,6 +1458,38 @@ function GraphSettings({ route, navigation }) {
           onConfirmPressed= {() => { throwAlertConfirm(false); submitChanges(); }}
           onCancelPressed= {()=> { throwAlertConfirm(false); }}
         />
+      
+        <AwesomeAlert
+          show={alertSuccess}
+          showProgress={false}
+          title={"Action Successful"}
+          message= {"Graph Duplicated"}
+          closeOnTouchOutside={false}
+          closeOnHardwareBackPress={false}
+          showConfirmButton={true}
+          confirmText="Okay"
+          confirmButtonColor="#63ba83"
+          contentContainerStyle={styles.alert}
+          messageStyle={styles.alertBody}
+          titleStyle={styles.alertText}
+          onConfirmPressed={() => { throwAlertSuccess(false); throwModal(false); }}
+        />
+
+        <Modal animationType="Slide" transparent={true} visible={modal}>
+          <View style ={styles.modalBox}>
+            <Text style ={styles.header}> {modalTitle} </Text>
+            <Text style={styles.subheader}> {"Do you want to duplicate " + graph.Title + "?"}</Text>
+            <View style={styles.fixToText}>
+              <TouchableOpacity onPress={() => (duplicateGraph())}>
+                <Text style={styles.smallButton}> Duplicate </Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => (throwModal(false))}>
+                <Text style={styles.warningButton}> Cancel </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+          
       </ScrollView>
     </SafeAreaView>
   );
@@ -1461,7 +1504,11 @@ function EditData({ route, navigation }) {
   const [filteredData, setFilteredData] = useState(graph.Data);
 
   const [alertDelete, throwAlertDelete] = useState(false);
+  const [alertEdit, throwAlertEdit] = useState(false);
   const [alertSuccess, throwAlertSuccess] = useState(false);
+  const [editSuccess, throwEditSuccess] = useState(false);
+
+  const scrollRef = useRef()
 
   const [dataDelete, setDataDelete] = useState();
   const [modal, throwModal] = useState(false);
@@ -1521,6 +1568,11 @@ function EditData({ route, navigation }) {
     throwAlertDelete(false);
     setCurData(AsyncCode.getGraph(keyParam).Data);
     filterData();
+  }
+
+  const editDataPoint = async(value) => {
+    AsyncCode.changeDataPoint(keyParam, value);
+    throwEditSuccess(true);
   }
 
   //Adds a description to a data entry
@@ -1590,8 +1642,6 @@ function EditData({ route, navigation }) {
               <View key={i} style={styles.barLine}>
                 <Text style={styles.tinyText}> {entry.Date.toLocaleString()} </Text>
                 <Text style={styles.tinyText}> {"Button: " + graph.Buttons[entry.ButtonID].ButtonName} </Text>
-<<<<<<< HEAD
-=======
                 {/* Tap on description to display full description for all descriptions. 
                 Tap again to go back to brief descriptions */}
                 <TouchableWithoutFeedback onPress={toggleNumLines}>  
@@ -1601,7 +1651,6 @@ function EditData({ route, navigation }) {
                   style={styles.tinyText}>
                   {"Description: " + entry.Description} </Text>
                 </TouchableWithoutFeedback>
->>>>>>> cfdde244e84441290759de7a78ee991aa099f84b
                 <View style={styles.fixToText}>
                   <TouchableWithoutFeedback onPress={() => { setDataPoint(entry); setModalTitle(entry.Date.toLocaleString()); throwModal(true); }}>
                     <Text style={styles.lightButton}> Add Description </Text>
@@ -1653,19 +1702,35 @@ function EditData({ route, navigation }) {
           />
 
           <Modal animationType="Slide" transparent={true} visible={modal}>
-            <View style={styles.modalBox}>
-              <Text style={styles.header}> {modalTitle} </Text>
-              <Text style={styles.subheader}> Set Description </Text>
-              
-              <TextInput multiline numberOfLines={4} onChangeText={text => setDataDesc(text)} placeholder="Data Description" style={styles.input} editable maxLength={5000}/>
+          <View style={styles.container}>
+            <View style={
+              {flex: 1,
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}>
+              <Text style={styles.header}> Set Description </Text>
+              <Text style={styles.subheader}> {modalTitle} </Text>
+            <KeyboardAvoidingView style={{ flex: 6, flexDirection: 'column',justifyContent: 'space-around',}} behavior="padding" enabled keyboardVerticalOffset={0}>
+            <ScrollView>
+                <View style={{width: width*0.9, height: height, flex:1}}>
+              <TextInput multiline numberOfLines={8} onChangeText={text => setDataDesc(text)} placeholder="Tap to start writing a description" style={styles.input} editable maxLength={5000} />
+              </View>
+            </ScrollView>
+            </KeyboardAvoidingView>
 
               <View style={styles.fixToText}>
                 <TouchableOpacity onPress={() => (addDataPointDescription(dataPoint, dataDesc))}>
-                  <Text style={styles.smallButton}> Submit </Text>
+                  <View style={{flex: 1, justifyContent: 'flex-end'}}>    
+                  <Text style={styles.smallButton}> Submit </Text> 
+                  </View>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => (throwModal(false))}>
+                <View style={{flex: 1, justifyContent: 'flex-end'}}>
                   <Text style={styles.warningButton}> Cancel </Text>
+                  </View>
                 </TouchableOpacity>
+              </View>
               </View>
             </View>
           </Modal>
