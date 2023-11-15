@@ -26,7 +26,12 @@ let blue="#438ab0";
 let teal="#43b0a9";
 let indigo="#6243b0";
 
+let redSlash = "#CC6060";
+let yellowSlash = "#DEC466";
+let blueSlash = "#68A1BF";
+
 let colorArray=[red,yellow,blue];
+let slashColorArray=[redSlash,yellowSlash,blueSlash];
 
 export default class TallyMark extends React.Component {
    //State of the class, data stored in here
@@ -132,31 +137,31 @@ function GetTallys ({data, pressHandler}) {
   let tallys1 = [];
   let tallys2 = [];
   let width = Dimensions.get("window").width * .75;
-  let height = Math.ceil(data.length / 25)*(width / 5)+75;
+  let height = Math.ceil(data.length / 25)*(width / 6)+85;
   
   let radius = width/40;
+  let currentXTally0 = radius;
+  let currentYTally0 = radius;
+
   let currentXTally1 = radius;
-  let currentYTally1 = radius;
+  let currentYTally1 = currentYTally0+50;
 
   let currentXTally2 = radius;
   let currentYTally2 = currentYTally1+50;
 
-  let currentXTally3 = radius;
-  let currentYTally3 = currentYTally2+50;
-
+  let tallyDivider0 = 0;
   let tallyDivider1 = 0;
   let tallyDivider2 = 0;
-  let tallyDivider3 = 0;
 
   //For each entry, creates a tally mark, with all of them being grouped by button ID
   for(let i = 0; i < data.length; i++){
-    if(data[i].ButtonID==0)
+    if(data[i].ButtonID==0) 
     {
-      if(tallyDivider1 != 4)
+      if(tallyDivider0 != 4) //handles regular tallys
     {
-      tallys0.push(<Line key={i} x1={currentXTally1} y1={currentYTally1} x2={currentXTally1} y2={currentYTally1+25} stroke={colorArray[data[i].ButtonID]} strokeWidth={10} strokeLinecap={"round"}/>);
-      currentXTally1 += radius * 2;
-      tallyDivider1++;
+      tallys0.push(<Line key={i} x1={currentXTally0} y1={currentYTally0} x2={currentXTally0} y2={currentYTally0+25} stroke={colorArray[data[i].ButtonID]} strokeWidth={8} strokeLinecap={"round"}/>);
+      currentXTally0 += radius * 2;
+      tallyDivider0++;
     }
     else //handles cross tally mark
     {
@@ -167,14 +172,14 @@ function GetTallys ({data, pressHandler}) {
       let crossY1 = tallys0[arrLength-4].props.y1;
       let crossY2 = tallys0[arrLength-1].props.y2;
       
-      tallys0.push(<Line key={i} x1={crossX1} y1={crossY1} x2={crossX2} y2={crossY2} stroke={colorArray[data[i].ButtonID]} strokeWidth={10} strokeLinecap={"round"}/>);
-      tallyDivider1 = 0;
+      tallys0.push(<Line key={i} x1={crossX1} y1={crossY1} x2={crossX2} y2={crossY2} stroke={slashColorArray[data[i].ButtonID]} strokeWidth={10} strokeLinecap={"round"}/>);
+      tallyDivider0 = 0;
     }
-    if(currentXTally1 > width){
-        currentXTally1 = radius;
+    if(currentXTally0 > width){
+        currentXTally0 = radius;
+        currentYTally0 += radius*5.5;
         currentYTally1 += radius*5.5;
         currentYTally2 += radius*5.5;
-        currentYTally3 += radius*5.5;
         //Moves all Button 1 tallys down
         for(let j = 0; j < tallys1.length;j++)
         {
@@ -184,7 +189,10 @@ function GetTallys ({data, pressHandler}) {
           let tempY1 = tallys1[j].props.y1 + radTimesEquals;
           let tempY2 = tallys1[j].props.y2 + radTimesEquals;
 
-          tallys1.splice(j,1,<Line key={j} x1={tempX1} y1={tempY1} x2={tempX2} y2={tempY2} stroke={yellow} strokeWidth={10} strokeLinecap={"round"}/>)
+          let tempColor = tallys1[j].props.stroke;
+          let tempStrokeWidth = tallys1[j].props.strokeWidth;
+
+          tallys1.splice(j,1,<Line key={j} x1={tempX1} y1={tempY1} x2={tempX2} y2={tempY2} stroke={tempColor} strokeWidth={tempStrokeWidth} strokeLinecap={"round"}/>)
         }
         //Moves all Button 2 tallys down
         for(let j = 0; j < tallys2.length;j++)
@@ -195,16 +203,19 @@ function GetTallys ({data, pressHandler}) {
           let tempY1 = tallys2[j].props.y1 + radTimesEquals;
           let tempY2 = tallys2[j].props.y2 + radTimesEquals;
 
-          tallys2.splice(j,1,<Line key={j} x1={tempX} y1={tempY1} x2={tempX2} y2={tempY2} stroke={blue} strokeWidth={10} strokeLinecap={"round"}/>)
+          let tempColor = tallys2[j].props.stroke;
+          let tempStrokeWidth = tallys2[j].props.strokeWidth;
+
+          tallys2.splice(j,1,<Line key={j} x1={tempX} y1={tempY1} x2={tempX2} y2={tempY2} stroke={tempColor} strokeWidth={tempStrokeWidth} strokeLinecap={"round"}/>)
         }
     }
 }
     else if(data[i].ButtonID==1)
     {
-      if(tallyDivider2 != 4){
-        tallys1.push(<Line key={i} x1={currentXTally2} y1={currentYTally2} x2={currentXTally2} y2={currentYTally2+25} stroke={colorArray[data[i].ButtonID]} strokeWidth={10} strokeLinecap={"round"}/>);
-        currentXTally2 += radius * 2;
-        tallyDivider2++;
+      if(tallyDivider1 != 4){ //handles regular tallys
+        tallys1.push(<Line key={i} x1={currentXTally1} y1={currentYTally1} x2={currentXTally1} y2={currentYTally1+25} stroke={colorArray[data[i].ButtonID]} strokeWidth={8} strokeLinecap={"round"}/>);
+        currentXTally1 += radius * 2;
+        tallyDivider1++;
       }
       else //handles cross tally mark
       {
@@ -215,13 +226,13 @@ function GetTallys ({data, pressHandler}) {
         let crossY1 = tallys1[arrLength-4].props.y1;
         let crossY2 = tallys1[arrLength-1].props.y2;
         
-        tallys1.push(<Line key={i} x1={crossX1} y1={crossY1} x2={crossX2} y2={crossY2} stroke={colorArray[data[i].ButtonID]} strokeWidth={10} strokeLinecap={"round"}/>);
-        tallyDivider2 = 0;
+        tallys1.push(<Line key={i} x1={crossX1} y1={crossY1} x2={crossX2} y2={crossY2} stroke={slashColorArray[data[i].ButtonID]} strokeWidth={10} strokeLinecap={"round"}/>);
+        tallyDivider1 = 0;
       }
-    if(currentXTally2 > width){
-        currentXTally2 = radius;
+    if(currentXTally1 > width){
+        currentXTally1 = radius;
+        currentYTally1 += radius*5.5;
         currentYTally2 += radius*5.5;
-        currentYTally3 += radius*5.5;
         //Moves all Button2 tallys down
         for(let j = 0; j < tallys2.length;j++)
         {
@@ -231,16 +242,19 @@ function GetTallys ({data, pressHandler}) {
           let tempY1 = tallys2[j].props.y1 + radTimesEquals;
           let tempY2 = tallys2[j].props.y2 + radTimesEquals;
 
-          tallys2.splice(j,1,<Line key={j} x1={tempX} y1={tempY1} x2={tempX2} y2={tempY2} stroke={blue} strokeWidth={10} strokeLinecap={"round"}/>)
+          let tempColor = tallys2[j].props.stroke;
+          let tempStrokeWidth = tallys2[j].props.strokeWidth;
+
+          tallys2.splice(j,1,<Line key={j} x1={tempX} y1={tempY1} x2={tempX2} y2={tempY2} stroke={tempColor} strokeWidth={tempStrokeWidth} strokeLinecap={"round"}/>)
         }
     }
     }
     else if(data[i].ButtonID==2)
     {
-      if(tallyDivider3 != 4){
-        tallys2.push(<Line key={i} x1={currentXTally3} y1={currentYTally3} x2={currentXTally3} y2={currentYTally3+25} stroke={colorArray[data[i].ButtonID]} strokeWidth={10} strokeLinecap={"round"}/>);
-        currentXTally3 += radius * 2;
-        tallyDivider3++;
+      if(tallyDivider2 != 4){ //handles regular tallys
+        tallys2.push(<Line key={i} x1={currentXTally2} y1={currentYTally2} x2={currentXTally2} y2={currentYTally2+25} stroke={colorArray[data[i].ButtonID]} strokeWidth={8} strokeLinecap={"round"}/>);
+        currentXTally2 += radius * 2;
+        tallyDivider2++;
       }
       else //handles cross tally mark
       {
@@ -251,12 +265,12 @@ function GetTallys ({data, pressHandler}) {
         let crossY1 = tallys2[arrLength-4].props.y1;
         let crossY2 = tallys2[arrLength-1].props.y2;
         
-        tallys2.push(<Line key={i} x1={crossX1} y1={crossY1} x2={crossX2} y2={crossY2} stroke={colorArray[data[i].ButtonID]} strokeWidth={10} strokeLinecap={"round"}/>);
-        tallyDivider3 = 0;
+        tallys2.push(<Line key={i} x1={crossX1} y1={crossY1} x2={crossX2} y2={crossY2} stroke={slashColorArray[data[i].ButtonID]} strokeWidth={10} strokeLinecap={"round"}/>);
+        tallyDivider2 = 0;
       }
-    if(currentXTally3 > width){
-        currentXTally3 = radius;
-        currentYTally3 += radius*5.5;
+    if(currentXTally2 > width){
+        currentXTally2 = radius;
+        currentYTally2 += radius*5.5;
     }
     }
   }

@@ -58,7 +58,7 @@ const graphLibrary = [
   { name: "Stock Market", image: require('./assets/StockMarket.png'), description: "Displays the number of times each button was pressed each day" },
   { name: "Timeline", image: require('./assets/Timeline.png'), description: "Displays when buttons are pressed each day." },
   { name: "Triskelion", image: require('./assets/Triskelion.png'), description: "Displays the number of button pairs pressed." },
-  { name: "Tally Marks", image: require('./assets/Triskelion.png'), description: "Displays the number of times each button is pressed." },
+  { name: "Tally Marks", image: require('./assets/TallyMarks.png'), description: "Displays the number of times each button is pressed." },
 ]
 
 //List of graphs for dropdowns
