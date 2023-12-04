@@ -158,6 +158,11 @@ export default class App extends React.Component {
 
 // Home Screen: Navigates to the other pages, and starts loading
 function HomeScreen({navigation}) {
+  // HOW TO HIDE / DISPLAY CONSOLE WARNINGS:
+  // In order to hide the error messages that appear at the bottom of the screen, e.g. for a presentation, use LogBox.ignoreAllLogs();
+  // If you want to display the error messages, comment out LogBox.ignoreAllLogs(); and refresh the app for Console Warnings to reappear
+  // LogBox.ignoreAllLogs();
+
   //Loads in async storage on page load
   React.useEffect(() => {
     const unsubscribe = navigation.addListener('focus', (e) => { 
