@@ -1022,6 +1022,15 @@ function Graph({ route, navigation }) {
   const [alertMenu, throwAlertMenu] = useState(false);
   const [alertDelete, throwAlertDelete] = useState(false);
 
+  // index for each button to set individual button colors
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  // button colors on all graphs, if more colors are desired you can declare them below
+  let red="#d64040";
+  let yellow="#d6b640";
+  let blue="#438ab0";
+  // feel free to add more colors to this array if more buttons are added
+  let colorArray = new Array(red, yellow, blue); 
+
   // this automatically checks the data every <MINUTE_MS> milliseconds.
   const MINUTE_MS = 250;
   useEffect(() => {
@@ -1157,18 +1166,21 @@ function Graph({ route, navigation }) {
 
   const customAlert = () => {
     return (
+      // This block of code displays the buttons on Graph Options menu
+      // To format visual elements (text size, width, color, etc.), create code in darkStyles.js and lightStyles.js
       <View>
         <TouchableOpacity opacity={0.5} onPress={() => { navigation.navigate('Graph Settings', { keyParam: keyParam }); throwAlertMenu(false); }}>
-          <Text style={styles.lightButton}> Graph Settings </Text>
+          {/* styles.optionsButton calls the corresponding darkStyle.js / lightStyle.js design for the text/button*/}
+          <Text style={styles.optionsButton}> Graph Settings </Text>
         </TouchableOpacity>
         <TouchableOpacity opacity={0.5} onPress={() => { navigation.navigate('Edit Data', { keyParam: keyParam }); throwAlertMenu(false); }}>
-          <Text style={styles.lightButton}> Edit Data Points </Text>
+          <Text style={styles.optionsButton}> Edit Data Points </Text>
         </TouchableOpacity>
         <TouchableOpacity opacity={0.5} onPress={() => { navigation.navigate('Data Info', { keyParam: keyParam }); throwAlertMenu(false); }}>
-          <Text style={styles.lightButton}> Data Info </Text>
+          <Text style={styles.optionsButton}> Data Info </Text>
         </TouchableOpacity>
         <TouchableOpacity opacity={0.5} onPress={() => { exportData(); throwAlertMenu(false); }}>
-          <Text style={styles.lightButton}> Export Data </Text>
+          <Text style={styles.optionsButton}> Export Data </Text>
         </TouchableOpacity>
         <View style={{marginVertical: 15}}/>
         <TouchableOpacity opacity={0.5} onPress={() => { throwAlertMenu(false); throwAlertDelete(true); }}>
@@ -1216,11 +1228,16 @@ function Graph({ route, navigation }) {
           <View style={styles.barLine}></View>
           <Text style={styles.header}> Add Data </Text>
 
+          {/* code for the list of buttons that appears on each graph page */}
           {graph.Buttons.map((button, i) => {
             return (
               <View key={i}>
                 <TouchableOpacity opacity={0.5} onPress={() => buttonPush(button.ButtonID)}>
-                  <Text style={styles.lightButton}> {button.ButtonName} </Text>
+                  {/* set the button at each index to the corresponding color in colorArray */}
+                  {/* button.ButtonName displays name of each button */}
+                  <Text style= {
+                    [styles.redButton, selectedIndex === i ? {backgroundColor: colorArray[i]} : {backgroundColor: colorArray[i]}, ]}>
+                    {button.ButtonName} </Text> 
                 </TouchableOpacity>
               </View>
             );
