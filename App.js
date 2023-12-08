@@ -40,6 +40,7 @@ import StockMarket from './components/GraphLibraries/stockMarket.js';
 import Dandelion from "./components/GraphLibraries/dandelion.js";
 import TallyMark from "./components/GraphLibraries/tallyMark.js"
 
+import Donut from "./components/GraphLibraries/donut.js"
  
 // const BleManagerModule = NativeModules.BleManager;
 // const bleEmitter = new NativeEventEmitter(BleManagerModule);
@@ -59,6 +60,7 @@ const graphLibrary = [
   { name: "Timeline", image: require('./assets/Timeline.png'), description: "Displays when buttons are pressed each day." },
   { name: "Triskelion", image: require('./assets/Triskelion.png'), description: "Displays the number of button pairs pressed." },
   { name: "Tally Marks", image: require('./assets/Triskelion.png'), description: "Displays the number of times each button is pressed." },
+  { name: "Donut", image: require('./assets/Donut.png'), description: "Displays the number of times each button is pressed." },
 ]
 
 //List of graphs for dropdowns
@@ -1226,6 +1228,7 @@ function Graph({ route, navigation }) {
             <StockMarket rawData={graph} styles={styles} name="Stock Market"/>
             <Dandelion rawData={graph} styles={styles} name="Dandelion" />
             <TallyMark rawData={graph} styles={styles} name="Tally Marks" />
+            <Donut rawData={graph} styles={styles} name="Donut" />
           </GraphSwitch>
         </ViewShot>
         
