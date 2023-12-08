@@ -1,6 +1,6 @@
 // React Native Imports
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { ImageBackground, LogBox, Text, View, FlatList, TouchableWithoutFeedback, TouchableOpacity, ScrollView, StyleSheet, Image, NativeModules, NativeEventEmitter, SectionList, TextInput, Appearance, Dimensions, Linking, Modal, KeyboardAvoidingView } from 'react-native';
+import { ImageBackground, LogBox, Text, View, FlatList, TouchableWithoutFeedback, TouchableOpacity, ScrollView, StyleSheet, Image, NativeModules, NativeEventEmitter, SectionList, TextInput, Appearance, Dimensions, Linking, Modal, KeyboardAvoidingView, StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { PermissionsAndroid, Platform, BackHandler } from "react-native";
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
@@ -39,8 +39,10 @@ import ChessClock from './components/GraphLibraries/chessClock.js';
 import StockMarket from './components/GraphLibraries/stockMarket.js';
 import Dandelion from "./components/GraphLibraries/dandelion.js";
 import TallyMark from "./components/GraphLibraries/tallyMark.js"
-
+import Constellation from './components/GraphLibraries/Constellation.js';
 import Donut from "./components/GraphLibraries/donut.js"
+import PieChart from "./components/GraphLibraries/pieChart.js";
+
  
 // const BleManagerModule = NativeModules.BleManager;
 // const bleEmitter = new NativeEventEmitter(BleManagerModule);
@@ -59,8 +61,10 @@ const graphLibrary = [
   { name: "Stock Market", image: require('./assets/StockMarket.png'), description: "Displays the number of times each button was pressed each day" },
   { name: "Timeline", image: require('./assets/Timeline.png'), description: "Displays when buttons are pressed each day." },
   { name: "Triskelion", image: require('./assets/Triskelion.png'), description: "Displays the number of button pairs pressed." },
-  { name: "Tally Marks", image: require('./assets/Triskelion.png'), description: "Displays the number of times each button is pressed." },
+  { name: "Tally Marks", image: require('./assets/TallyMarks.png'), description: "Displays the number of times each button is pressed." },
   { name: "Donut", image: require('./assets/Donut.png'), description: "Displays the number of times each button is pressed." },
+  { name: "Constellation", image: require('./assets/Constellation.png'), description: "Displays the number of times each button is pressed." },
+  { name: "Pie Chart", image: require('./assets/PieChart.png'), description: "Displays the number of times each button is pressed." },
 ]
 
 //List of graphs for dropdowns
@@ -124,7 +128,7 @@ export default class App extends React.Component {
       styles = darkStyles;
     }
 
-    // AsyncCode.addBigData();
+    AsyncCode.addBigData();
     this.getStuff();
     let defaults = AsyncCode.getAsyncDefaults();
     GLOBAL.BUTTON0KEY = defaults[0].button0Key;
@@ -163,7 +167,7 @@ function HomeScreen({navigation}) {
   // HOW TO HIDE / DISPLAY CONSOLE WARNINGS:
   // In order to hide the error messages that appear at the bottom of the screen, e.g. for a presentation, use LogBox.ignoreAllLogs();
   // If you want to display the error messages, comment out LogBox.ignoreAllLogs(); and refresh the app for Console Warnings to reappear
-  // LogBox.ignoreAllLogs();
+   LogBox.ignoreAllLogs();
 
   //Loads in async storage on page load
   React.useEffect(() => {
@@ -219,6 +223,7 @@ function HomeScreen({navigation}) {
       <TouchableWithoutFeedback onPress={() => navigation.navigate('Graph Library')}>
         <Text style={styles.bigButton}> Graph Library </Text>
       </TouchableWithoutFeedback>
+      <StatusBar backgroundColor='black' barStyle='default'/>
     </View>
   );
 }
@@ -1229,6 +1234,8 @@ function Graph({ route, navigation }) {
             <Dandelion rawData={graph} styles={styles} name="Dandelion" />
             <TallyMark rawData={graph} styles={styles} name="Tally Marks" />
             <Donut rawData={graph} styles={styles} name="Donut" />
+            <Constellation rawData={graph} styles={styles} name="Constellation" />
+            <PieChart rawData={graph} styles={styles} name="Pie Chart" />
           </GraphSwitch>
         </ViewShot>
         
