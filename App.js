@@ -42,6 +42,7 @@ import TallyMark from "./components/GraphLibraries/tallyMark.js"
 import Constellation from './components/GraphLibraries/Constellation.js';
 import Donut from "./components/GraphLibraries/donut.js"
 import PieChart from "./components/GraphLibraries/pieChart.js";
+import Rings from "./components/GraphLibraries/rings.js";
 
  
 // const BleManagerModule = NativeModules.BleManager;
@@ -65,6 +66,7 @@ const graphLibrary = [
   { name: "Donut", image: require('./assets/Donut.png'), description: "Displays the number of times each button is pressed." },
   { name: "Constellation", image: require('./assets/Constellation.png'), description: "Displays the number of times each button is pressed." },
   { name: "Pie Chart", image: require('./assets/PieChart.png'), description: "Displays the number of times each button is pressed." },
+  { name: "Rings", image: require('./assets/RingsSample.png'), description: "Displays the duration between the same button being pressed." },
 ]
 
 //List of graphs for dropdowns
@@ -1233,6 +1235,7 @@ function Graph({ route, navigation }) {
             <StockMarket rawData={graph} styles={styles} name="Stock Market"/>
             <Dandelion rawData={graph} styles={styles} name="Dandelion" />
             <TallyMark rawData={graph} styles={styles} name="Tally Marks" />
+            <Rings rawData={graph} styles={styles} name="Rings" />
             <Donut rawData={graph} styles={styles} name="Donut" />
             <Constellation rawData={graph} styles={styles} name="Constellation" />
             <PieChart rawData={graph} styles={styles} name="Pie Chart" />
