@@ -63,7 +63,7 @@ const graphLibrary = [
   { name: "Timeline", image: require('./assets/Timeline.png'), description: "Displays when buttons are pressed each day." },
   { name: "Triskelion", image: require('./assets/Triskelion.png'), description: "Displays the number of button pairs pressed." },
   { name: "Tally Marks", image: require('./assets/TallyMarks.png'), description: "Displays the number of times each button is pressed." },
-  { name: "Donut", image: require('./assets/Donut.png'), description: "Displays the number of times each button is pressed." },
+  { name: "Donut", image: require('./assets/DonutBordered.png'), description: "Displays the number of times each button is pressed." },
   { name: "Constellation", image: require('./assets/Constellation.png'), description: "Displays the number of times each button is pressed." },
   { name: "Pie Chart", image: require('./assets/PieChart.png'), description: "Displays the number of times each button is pressed." },
   { name: "Rings", image: require('./assets/RingsSample.png'), description: "Displays the duration between the same button being pressed." },
@@ -130,7 +130,7 @@ export default class App extends React.Component {
       styles = darkStyles;
     }
 
-    AsyncCode.addBigData();
+    //AsyncCode.addBigData();
     this.getStuff();
     let defaults = AsyncCode.getAsyncDefaults();
     GLOBAL.BUTTON0KEY = defaults[0].button0Key;
@@ -1557,6 +1557,14 @@ function EditData({ route, navigation }) {
   let placeholders = ["Day", "Month", "Year"];
   let lengths = [2, 2, 4];
 
+  var width = Dimensions.get('window').width;
+  var height = Dimensions.get('window').height;
+
+  const [textShown, showText] = useState(false); // show/don't show full description
+  const toggleNumLines = () => {
+  showText(!textShown);
+  }
+
   const [asyncStorage, setAsyncStorage] = useState();
 
   const buttonOptions = [
@@ -1688,12 +1696,13 @@ function EditData({ route, navigation }) {
                 </TouchableWithoutFeedback>
                 <View style={styles.fixToText}>
                   <TouchableWithoutFeedback onPress={() => { setDataPoint(entry); setModalTitle(entry.Date.toLocaleString()); throwModal(true); }}>
-                    <Text style={styles.lightButton}> Add Description </Text>
+                    <Text style={styles.optionsButton}> Add Description </Text>
                   </TouchableWithoutFeedback>
 
-                  <TouchableWithoutFeedback onPress={() => { setDataPoint(entry); setModalTitle("Edit Data Point"); throwModalEdit(true); }}>
+                  {/* Editting data points is not fully implemented and is deactivated by default, uncomment to turn on the button*/}
+                  {/* <TouchableWithoutFeedback onPress={() => { setDataPoint(entry); setModalTitle("Edit Data Point"); throwModalEdit(true); }}>
                     <Text style={styles.lightButton}> Edit Data Point </Text>
-                  </TouchableWithoutFeedback>
+                  </TouchableWithoutFeedback> */}
 
                   <TouchableWithoutFeedback onPress={() => { setDataDelete(entry); throwAlertDelete(true); }}>
                     <Text style={styles.warningButton}> Delete </Text>

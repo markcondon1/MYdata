@@ -260,7 +260,7 @@ export default StyleSheet.create({
     // for the Graph Options page
     optionsButton:{
         alignItems: 'center',
-        backgroundColor: red,
+        backgroundColor: green,
         color: darkTextColor,
         textAlign: "center",
         fontSize: smallFontSize,
